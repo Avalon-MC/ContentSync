@@ -22,6 +22,6 @@ public class Version implements Comparable<Version> {
 
     @Override
     public int compareTo(@NotNull Version o) {
-        return this.GetSemver().isGreaterThan(o.GetSemver()) ? 1 : -1;
+        return this.GetSemver().isGreaterThan(o.GetSemver()) ? -1 : 1;
     }
 }

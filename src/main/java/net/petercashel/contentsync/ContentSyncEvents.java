@@ -23,63 +23,30 @@ import java.nio.file.Files;
 @Mod.EventBusSubscriber(modid = "contentsync", bus = Mod.EventBusSubscriber.Bus.MOD)
 
 public class ContentSyncEvents {
-    static Gson gson = new GsonBuilder().setPrettyPrinting().serializeNulls().create();
+
 
     @SubscribeEvent
     static void onConstructMod(FMLConstructModEvent event) {
-        ContentSyncConfig CSconfig = new ContentSyncConfig();
-        File cfgFile = new File("contentsync/config.json").getAbsoluteFile();
-        CSconfig = LoadConfig(cfgFile, CSconfig);
-        SaveConfig(cfgFile, CSconfig);
+        ContentSyncConfig CSconfig = ContentSyncConfig.LoadConfig();
+        ContentSyncConfig.SaveConfig();
 
         Dist dist = FMLEnvironment.dist;
         ModLoadingContext context = ModLoadingContext.get();
+        Logger logger = LogManager.getLogger(context.getActiveContainer().getModId());
 
         ContentSync contentSync = (ContentSync) context.getActiveContainer().getMod();
         contentSync.contentSyncConfig = CSconfig;
 
-        Logger logger = LogManager.getLogger(context.getActiveContainer().getModId());
-        logger.info("WE RAN! ContentSync Queue!");
-        event.enqueueWork(new ConstructEventWorker(logger, dist));
+        if (CSconfig.IsConfigured) {
+            logger.info("ContentSync Starting Up!");
 
-        StartupMessageManager.modLoaderConsumer().ifPresent(c->c.accept("This is a test"));
+            event.enqueueWork(new ConstructEventWorker(logger, dist));
+            logger.info("ContentSync Task Queued!");
+        }
 
 
     }
 
-    private static void SaveConfig(File cfgFile, ContentSyncConfig CSconfig) {
-        try {
-            try(FileWriter writer = new FileWriter(cfgFile.getAbsoluteFile().getPath())) {
-                gson.toJson(CSconfig, writer);
-                writer.flush();
-            }
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-    }
-
-    private static ContentSyncConfig LoadConfig(File cfgFile, ContentSyncConfig CSconfig) {
-        if (cfgFile.exists()) {
-            try {
-                // create a reader
-                Reader reader = Files.newBufferedReader(cfgFile.toPath());
-
-                CSconfig = gson.fromJson(reader, ContentSyncConfig.class);
-
-                // close reader
-                reader.close();
-
-            } catch (Exception ex) {
-                ex.printStackTrace();
-            }
-        }
-        if (!cfgFile.exists() || CSconfig == null) {
-            CSconfig = new ContentSyncConfig();
-            CSconfig.contentEntriesList.add(new ContentEntry()); //Default
-            cfgFile.getParentFile().mkdirs();
-        }
-        return CSconfig;
-    }
 
 
 }

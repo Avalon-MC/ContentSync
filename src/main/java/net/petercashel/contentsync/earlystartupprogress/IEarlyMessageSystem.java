@@ -11,4 +11,5 @@ public interface IEarlyMessageSystem {
     public void AddMessageToQueue(String stage, String message);
 
     public void SetPrimaryProgressBar(float value, float max);
+    public void SetPrimaryProgressBar(float value);
 }

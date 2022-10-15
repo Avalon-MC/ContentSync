@@ -25,4 +25,9 @@ public class ServerEMS implements IEarlyMessageSystem{
     public void SetPrimaryProgressBar(float value, float max) {
 
     }
+
+    @Override
+    public void SetPrimaryProgressBar(float value) {
+
+    }
 }

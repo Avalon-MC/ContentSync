@@ -56,6 +56,11 @@ public class ClientEMS implements IEarlyMessageSystem{
     }
 
     @Override
+    public void SetPrimaryProgressBar(float value) {
+        PrimaryProgressBar.SetValue(value);
+    }
+
+    @Override
     public void SetPrimaryProgressBar(float value, float max) {
         PrimaryProgressBar.SetValue(value);
         PrimaryProgressBar.SetMax(max);
