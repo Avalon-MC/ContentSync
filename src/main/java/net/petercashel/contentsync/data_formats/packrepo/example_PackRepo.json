@@ -1,0 +1,30 @@
+[
+  {
+    "name":"example_entry",
+    "type": "datapack", //Valid values are ["datapack", "resourcepack", "kubejs"]
+    "versions":[
+      {
+        "Version":"1.0.0",
+        "URL":""
+      },
+      {
+        "Version":"1.0.1",
+        "URL":""
+      }
+    ]
+  },
+  {
+    "name":"example_entry_two",
+    "type": "resourcepack",
+    "versions":[
+      {
+        "Version":"1.0.0",
+        "URL":""
+      },
+      {
+        "Version":"1.0.1",
+        "URL":""
+      }
+    ]
+  }
+]
