@@ -15,6 +15,7 @@ public class ClientEMS implements IEarlyMessageSystem{
     private ProgressBar PrimaryProgressBar;
     private TextLabel StageText;
     private TextLabel MessageText;
+    private TextLabel MessageText2;
 
     @Override
     public void SetupMessageSystem(Logger logger, Dist side) {
@@ -22,11 +23,13 @@ public class ClientEMS implements IEarlyMessageSystem{
 
         this.ProgressWindow = new ClientProgressWindow(logger);
 
-        this.StageText = new TextLabel("", 28, 100, Color.WHITE);
+        this.StageText = new TextLabel("", 24, 100, Color.WHITE);
         ProgressWindow.StageText = (StageText);
 
-        this.MessageText = new TextLabel("", 28, 45, Color.WHITE);
+        this.MessageText = new TextLabel("", 24, 45, Color.WHITE);
         ProgressWindow.MessageText = (MessageText);
+        this.MessageText2 = new TextLabel("", 24, 45 - (24 + 4), Color.WHITE);
+        ProgressWindow.MessageText2 = (MessageText2);
 
         this.PrimaryProgressBar = new ProgressBar(25, 75, 450, 20, 4, 0, 100, Color.BLACK, Color.WHITE);
         ProgressWindow.AddRenderable(PrimaryProgressBar);

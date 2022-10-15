@@ -3,9 +3,11 @@ package net.petercashel.contentsync.configuration;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.annotations.Expose;
+import org.apache.commons.io.FileUtils;
 
 import java.io.File;
 import java.io.FileWriter;
+import java.io.IOException;
 import java.io.Reader;
 import java.nio.file.Files;
 import java.util.ArrayList;
@@ -14,7 +16,11 @@ import java.util.List;
 public class ContentSyncConfig {
 
     public ContentSyncConfig() {
-        if (!cacheFolder.exists()) cacheFolder.mkdirs();
+        try {
+            MakeClean(cacheFolder);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         if (!kubejs_client_scripts.exists()) kubejs_client_scripts.mkdirs();
         if (!kubejs_server_scripts.exists()) kubejs_server_scripts.mkdirs();
@@ -22,6 +28,14 @@ public class ContentSyncConfig {
         if (!openloader_datapacks.exists()) openloader_datapacks.mkdirs();
         if (!openloader_resourcepacks.exists()) openloader_resourcepacks.mkdirs();
 
+    }
+
+    private void MakeClean(File TargetFolder) throws IOException {
+        if (TargetFolder.exists())
+        {
+            FileUtils.deleteDirectory(TargetFolder);
+        }
+        if (!TargetFolder.exists()) TargetFolder.mkdirs();
     }
 
     @Expose
@@ -37,6 +51,7 @@ public class ContentSyncConfig {
     public static File kubejs_client_scripts = new File("kubejs/client_scripts/").getAbsoluteFile();
     public static File kubejs_server_scripts = new File("kubejs/server_scripts/").getAbsoluteFile();
     public static File kubejs_startup_scripts = new File("kubejs/startup_scripts/").getAbsoluteFile();
+    public static boolean HadKubeJSStartupScriptsUpdate = false;
 
     public static File openloader_datapacks = new File("config/openloader/data/").getAbsoluteFile();
     public static File openloader_resourcepacks = new File("config/openloader/resources/").getAbsoluteFile();

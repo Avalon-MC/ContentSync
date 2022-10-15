@@ -38,10 +38,8 @@ public class ContentSyncEvents {
         contentSync.contentSyncConfig = CSconfig;
 
         if (CSconfig.IsConfigured) {
-            logger.info("ContentSync Starting Up!");
-
-            event.enqueueWork(new ConstructEventWorker(logger, dist));
-            logger.info("ContentSync Task Queued!");
+            var runner = new ConstructEventWorker(logger, dist);
+             event.enqueueWork(runner);
         }
 
 

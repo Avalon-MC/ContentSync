@@ -34,12 +34,6 @@ public class ConstructEventWorker implements Runnable {
         ems.AddMessageToQueue("Testing", "Startup");
         ems.SetPrimaryProgressBar(1,5);
         try {
-            Thread.sleep(200); //Allow window to wake up
-            Thread.sleep(200);
-            Thread.sleep(200);
-            Thread.sleep(200);
-            Thread.sleep(200);
-
             DoWorkerTask();
         } catch (InterruptedException e) {
             e.printStackTrace();
@@ -59,6 +53,7 @@ public class ConstructEventWorker implements Runnable {
 
     private void DoWorkerTask() throws InterruptedException {
         CheckForUpdates();
+        Thread.sleep(200);
 
         if (needToRunUpdate) {
             for (int i = 0; i < ContentSyncConfig.ConfigInstance.contentEntriesList.size(); i++) {
@@ -69,10 +64,12 @@ public class ConstructEventWorker implements Runnable {
                         currentTaskIndex++;
                         ems.SetPrimaryProgressBar(currentTaskIndex, totalTasks);
                         entry.DownloadUpdate();
+                        Thread.sleep(200);
                         ems.AddMessageToQueue("Installing Update", entry.GetDisplayName());
                         currentTaskIndex++;
                         ems.SetPrimaryProgressBar(currentTaskIndex, totalTasks);
                         entry.InstallUpdate();
+                        Thread.sleep(200);
                         entry.CleanUpCacheFile();
                     } catch (IOException e) {
                         e.printStackTrace();
@@ -82,10 +79,19 @@ public class ConstructEventWorker implements Runnable {
                 }
 
             }
+            Thread.sleep(200);
             currentTaskIndex = totalTasks;
             ems.SetPrimaryProgressBar(currentTaskIndex, totalTasks);
-            ems.AddMessageToQueue("Done!", "Have a great day!");
+
+            if (ContentSyncConfig.HadKubeJSStartupScriptsUpdate) {
+                ems.AddMessageToQueue("Update Complete", "You will need to restart minecraft@;@;to finish the update.");
+                Thread.sleep(2200);
+            } else {
+                ems.AddMessageToQueue("Update Complete", "Have a great day!");
+                Thread.sleep(200);
+            }
         }
+
     }
 
     private void CheckForUpdates() throws InterruptedException {

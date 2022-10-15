@@ -30,6 +30,7 @@ public class ClientProgressWindow {
     private long window;
     private String LastStage = "NoStage";
     private String LastMessage = "NoMessage";
+    private String LastMessage2 = "NoMessage";
     Queue<Pair<String, String>> MessageQueue = new LinkedList<>();
     private boolean Stopped = false;
     private int windowWidth;
@@ -37,6 +38,7 @@ public class ClientProgressWindow {
     private ArrayList<IUIRenderable> Controls = new ArrayList<>();
     public TextLabel StageText;
     public TextLabel MessageText;
+    public TextLabel MessageText2;
 
     public ClientProgressWindow(Logger logger) {
         this.logger = logger;
@@ -134,6 +136,14 @@ public class ClientProgressWindow {
         glClearColor(clearColor.getRed(), clearColor.getGreen(), clearColor.getBlue(), clearColor.getAlpha());
 
         glDisable(org.lwjgl.opengl.GL11.GL_DEPTH_TEST);
+
+        glClear(GL_COLOR_BUFFER_BIT); // clear the framebuffer
+
+        glfwSwapBuffers(window); // swap the color buffers
+
+        // Poll for window events. The key callback above will only be
+        // invoked during this call.
+        glfwPollEvents();
     }
 
     public int frameCount = 0;
@@ -146,7 +156,7 @@ public class ClientProgressWindow {
             long start = System.currentTimeMillis();
             long finish = System.currentTimeMillis();
             long timeElapsed = finish - start;
-            long frametime = 1000 / 30;
+            long frametime = 1000 / 60;
             while ( !glfwWindowShouldClose(window) ) {
                 start = System.currentTimeMillis();
 
@@ -160,7 +170,13 @@ public class ClientProgressWindow {
                 if (!MessageQueue.isEmpty() && MessageQueue.peek() != null) {
                     var message = MessageQueue.poll();
                     LastStage = message.getLeft();
+                    LastMessage2 = "";
                     LastMessage = message.getRight();
+                    if (LastMessage.contains("@;@;")) {
+                        var split = LastMessage.split("@;@;");
+                        LastMessage = split[0];
+                        LastMessage2 = split[1];
+                    }
                 }
 
                 glClear(GL_COLOR_BUFFER_BIT); // clear the framebuffer
@@ -219,6 +235,11 @@ public class ClientProgressWindow {
                     MessageText.SetText(LastMessage);
                     MessageText.render();
                     glPopMatrix();
+
+                    glPushMatrix();
+                    MessageText2.SetText(LastMessage2);
+                    MessageText2.render();
+                    glPopMatrix();
                 }
 
                 glDisable(GL_BLEND);
@@ -231,7 +252,7 @@ public class ClientProgressWindow {
                 glfwPollEvents();
 
                 frameCount++;
-                //Target 30fps
+                //Target 60fps
                 finish = System.currentTimeMillis();
                 timeElapsed = finish - start;
                 if (timeElapsed < frametime) {

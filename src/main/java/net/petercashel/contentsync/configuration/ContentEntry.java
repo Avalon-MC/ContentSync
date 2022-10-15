@@ -6,6 +6,7 @@ import com.google.gson.reflect.TypeToken;
 import net.petercashel.contentsync.data_formats.packrepo.PackRepoEntry;
 import net.petercashel.contentsync.data_formats.packrepo.PackTypeEnum;
 import net.petercashel.contentsync.utils.WebHelper;
+import org.apache.commons.io.FileUtils;
 
 import java.io.*;
 import java.lang.reflect.Type;
@@ -121,7 +122,18 @@ public class ContentEntry {
 
         if (IsKubeJSPack()) {
             //More work
+            File Target_Client = new File(ContentSyncConfig.kubejs_client_scripts + File.separator + targetEntry.get().name + File.separator);
+            File Target_Server = new File(ContentSyncConfig.kubejs_server_scripts + File.separator + targetEntry.get().name + File.separator);
+            File Target_Startup = new File(ContentSyncConfig.kubejs_startup_scripts + File.separator + targetEntry.get().name + File.separator);
 
+            MakeClean(Target_Client);
+            MakeClean(Target_Server);
+            MakeClean(Target_Startup);
+
+            ExtractUpdateKubeJSToFolder(Target_Client.getAbsolutePath(), Target_Server.getAbsolutePath(),Target_Startup.getAbsolutePath());
+
+            installedVersion = targetEntry.get().GetLatestVersion(targetVersion).version;
+            SaveConfig();
 
         } else {
             File TargetBase;
@@ -132,7 +144,6 @@ public class ContentEntry {
                 }
                 case resourcepack -> {
                     TargetBase = ContentSyncConfig.openloader_resourcepacks;
-
                     break;
                 }
                 default -> {
@@ -143,40 +154,113 @@ public class ContentEntry {
             String filepath = TargetBase + File.separator + targetEntry.get().name + File.separator;
             File TargetFolder = new File(filepath);
 
-            if (!TargetFolder.exists()) TargetFolder.mkdirs();
+            MakeClean(TargetFolder);
 
-            //buffer for read and write data to file
-            byte[] buffer = new byte[2048];
-            FileInputStream fileInputStream = new FileInputStream(cachedUpdatePath);
-            ZipInputStream zipFileStream = new ZipInputStream(fileInputStream);
-            ZipEntry zipEntry = zipFileStream.getNextEntry();
-
-            while(zipEntry != null){
-                String fileName = zipEntry.getName();
-                File newFile = new File(filepath + File.separator + fileName);
-
-                 //create directories for sub directories in zip
-                new File(newFile.getParent()).mkdirs();
-                FileOutputStream fos = new FileOutputStream(newFile);
-                int len;
-                while ((len = zipFileStream.read(buffer)) > 0) {
-                    fos.write(buffer, 0, len);
-                }
-                fos.close();
-                //close this ZipEntry
-                zipFileStream.closeEntry();
-                zipEntry = zipFileStream.getNextEntry();
-            }
-            //close last ZipEntry
-            zipFileStream.closeEntry();
-            zipFileStream.close();
-            fileInputStream.close();
+            ExtractUpdateToFolder(filepath);
 
             installedVersion = targetEntry.get().GetLatestVersion(targetVersion).version;
             SaveConfig();
         }
 
 
+    }
+
+    private void ExtractUpdateKubeJSToFolder(String clientPath, String serverPath, String startupPath) throws IOException {
+        //buffer for read and write data to file
+        byte[] buffer = new byte[2048];
+        FileInputStream fileInputStream = new FileInputStream(cachedUpdatePath);
+        ZipInputStream zipFileStream = new ZipInputStream(fileInputStream);
+        ZipEntry zipEntry = zipFileStream.getNextEntry();
+
+        while(zipEntry != null){
+            String fileName = zipEntry.getName();
+
+            String filepath;
+            if (fileName.startsWith("client_scripts")) {
+                filepath = clientPath;
+                fileName = fileName.substring("client_scripts/".length());
+                if (fileName.length() == 0) {
+                    zipEntry = zipFileStream.getNextEntry();
+                    continue;
+                }
+            }
+            else if (fileName.startsWith("server_scripts")) {
+                filepath = serverPath;
+                fileName = fileName.substring("server_scripts/".length());
+                if (fileName.length() == 0) {
+                    zipEntry = zipFileStream.getNextEntry();
+                    continue;
+                }
+            }
+            else if (fileName.startsWith("startup_scripts")) {
+                filepath = startupPath;
+                fileName = fileName.substring("startup_scripts/".length());
+                if (fileName.length() == 0) {
+                    zipEntry = zipFileStream.getNextEntry();
+                    continue;
+                }
+                ContentSyncConfig.HadKubeJSStartupScriptsUpdate = true;
+            }
+            else {
+                zipEntry = zipFileStream.getNextEntry();
+                continue;
+            }
+
+            File newFile = new File(filepath + File.separator + fileName);
+
+            //create directories for sub directories in zip
+            new File(newFile.getParent()).mkdirs();
+            FileOutputStream fos = new FileOutputStream(newFile);
+            int len;
+            while ((len = zipFileStream.read(buffer)) > 0) {
+                fos.write(buffer, 0, len);
+            }
+            fos.close();
+            //close this ZipEntry
+            zipFileStream.closeEntry();
+            zipEntry = zipFileStream.getNextEntry();
+        }
+        //close last ZipEntry
+        zipFileStream.closeEntry();
+        zipFileStream.close();
+        fileInputStream.close();
+    }
+
+    private void ExtractUpdateToFolder(String filepath) throws IOException {
+        //buffer for read and write data to file
+        byte[] buffer = new byte[2048];
+        FileInputStream fileInputStream = new FileInputStream(cachedUpdatePath);
+        ZipInputStream zipFileStream = new ZipInputStream(fileInputStream);
+        ZipEntry zipEntry = zipFileStream.getNextEntry();
+
+        while(zipEntry != null){
+            String fileName = zipEntry.getName();
+            File newFile = new File(filepath + File.separator + fileName);
+
+             //create directories for sub directories in zip
+            new File(newFile.getParent()).mkdirs();
+            FileOutputStream fos = new FileOutputStream(newFile);
+            int len;
+            while ((len = zipFileStream.read(buffer)) > 0) {
+                fos.write(buffer, 0, len);
+            }
+            fos.close();
+            //close this ZipEntry
+            zipFileStream.closeEntry();
+            zipEntry = zipFileStream.getNextEntry();
+        }
+        //close last ZipEntry
+        zipFileStream.closeEntry();
+        zipFileStream.close();
+        fileInputStream.close();
+    }
+
+    private void MakeClean(File TargetFolder) throws IOException {
+        if (TargetFolder.exists())
+        {
+            FileUtils.deleteDirectory(TargetFolder);
+        }
+        if (!TargetFolder.exists()) TargetFolder.mkdirs();
     }
 
     public void CleanUpCacheFile() {
