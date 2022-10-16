@@ -23,12 +23,12 @@ public class ClientEMS implements IEarlyMessageSystem{
 
         this.ProgressWindow = new ClientProgressWindow(logger);
 
-        this.StageText = new TextLabel("", 24, 100, Color.WHITE);
+        this.StageText = new TextLabel("", 24, 100, Color.WHITE).SetCemter(500);
         ProgressWindow.StageText = (StageText);
 
-        this.MessageText = new TextLabel("", 24, 45, Color.WHITE);
+        this.MessageText = new TextLabel("", 24, 45, Color.WHITE).SetCemter(500);
         ProgressWindow.MessageText = (MessageText);
-        this.MessageText2 = new TextLabel("", 24, 45 - (24 + 4), Color.WHITE);
+        this.MessageText2 = new TextLabel("", 24, 45 - (24 + 4), Color.WHITE).SetCemter(500);
         ProgressWindow.MessageText2 = (MessageText2);
 
         this.PrimaryProgressBar = new ProgressBar(25, 75, 450, 20, 4, 0, 100, Color.BLACK, Color.WHITE);

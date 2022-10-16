@@ -5,11 +5,12 @@ import net.petercashel.contentsync.earlystartupprogress.GUI.Core.Font;
 
 public class TextLabel implements IUIRenderable{
     private Font font = null;
-    private final int x;
+    private int x;
     private final int y;
     private final Color textColor;
     private String text;
     public int FontSize = 24;
+    private boolean center = false;
 
     public TextLabel(String text, int x, int y, Color textColor) {
         this.text = text;
@@ -23,10 +24,23 @@ public class TextLabel implements IUIRenderable{
         if (font == null) {
             this.font = new Font(FontSize, true);
         }
-        font.drawText(text, x,y, textColor);
+
+        int posx = x;
+
+        if (center) {
+            posx = posx - (font.getWidth(text) / 2);
+        }
+
+        font.drawText(text, posx,y, textColor);
     }
 
     public void SetText(String Text) {
         this.text = Text;
+    }
+
+    public TextLabel SetCemter(int windowWidth) {
+        x = windowWidth / 2;
+        center = true;
+        return this;
     }
 }
