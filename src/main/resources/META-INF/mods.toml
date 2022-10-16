@@ -28,5 +28,12 @@ side = "BOTH"
 modId = "kubejs"
 mandatory = true
 versionRange = "[${kubejs_min_version},)"
-ordering = "AFTER"
+ordering = "BEFORE"
+side = "BOTH"
+
+[[dependencies.contentsync]]
+modId = "openloader"
+mandatory = true
+versionRange = "[${openloader_min_version},)"
+ordering = "BEFORE"
 side = "BOTH"

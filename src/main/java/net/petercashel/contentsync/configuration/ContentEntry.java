@@ -239,14 +239,19 @@ public class ContentEntry {
 
              //create directories for sub directories in zip
             new File(newFile.getParent()).mkdirs();
-            FileOutputStream fos = new FileOutputStream(newFile);
-            int len;
-            while ((len = zipFileStream.read(buffer)) > 0) {
-                fos.write(buffer, 0, len);
+            if (zipEntry.isDirectory()) {
+                newFile.mkdirs();
             }
-            fos.close();
-            //close this ZipEntry
-            zipFileStream.closeEntry();
+            else {
+                FileOutputStream fos = new FileOutputStream(newFile);
+                int len;
+                while ((len = zipFileStream.read(buffer)) > 0) {
+                    fos.write(buffer, 0, len);
+                }
+                fos.close();
+                //close this ZipEntry
+                zipFileStream.closeEntry();
+            }
             zipEntry = zipFileStream.getNextEntry();
         }
         //close last ZipEntry

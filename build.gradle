@@ -285,6 +285,7 @@ processResources {
             forge_min_version : forge_min_version,
             create_min_version: create_min_version,
             kubejs_min_version: kubejs_min_version,
+            openloader_min_version: openloader_min_version,
             license           : license]
 
     inputs.properties replaceProperties
