@@ -1,6 +1,6 @@
 
 # ContentSync - [MIT Licence](https://github.com/Avalon-MC/ContentSync/blob/main/LICENSE)
-> A Forge 1.18.2 mod. Requires OpenLoader and KubeJS.
+> A Forge 1.18.2 mod. Requires OpenLoader and KubeJS. Created by Peter Cashel (pacas00) and contributers.
 >> PLEASE NOTE: ContentSync is in Alpha and is being actively developed and tested.
 
 ### What is this
