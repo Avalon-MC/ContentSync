@@ -1,6 +1,7 @@
 
 # ContentSync - [MIT Licence](https://github.com/Avalon-MC/ContentSync/blob/main/LICENSE)
-> PLEASE NOTE: ContentSync is in Alpha and is being actively developed and tested.
+> A Forge 1.18.2 mod. Requires OpenLoader and KubeJS.
+>> PLEASE NOTE: ContentSync is in Alpha and is being actively developed and tested.
 
 ### What is this
 
@@ -15,7 +16,8 @@ The mod relies on OpenLoader and KubeJS and uses standard resource packs,datapac
 
 ### Startup UI
 This is what the progress window for ContentSync looks like on startup and will display the progress of the autoupdate check and download process.
-Dedicated Servers won't have this and instead will log everything to the console. 
+Dedicated Servers won't have this and instead will log everything to the console.
+
 ![ContentSync progress screen. It is a red box with white text at the top saying, "ContentSync". There are three items below that. A line of text indicating what is happening, This currently says, "Checking for updates". Then there is a black bar. This bar will fill from left to right as ContentSync completes the autoupdating process. Finally there is another line of text. This shows a human friendly name for the content pack being downloaded. This concludes the alt text description of the progress screen.](https://cdn.discordapp.com/attachments/822105402372128798/1030920442942337124/unknown.png "ContentSync progress screen.")
 
 ### Data Packs / Resource Packs
@@ -28,7 +30,6 @@ We do not support the assets or data folders at the moment. (may change if requi
 client_scripts  - holds files that will go into kubejs/client_scripts/<name>
 server_scripts  - holds files that will go into kubejs/server_scripts/<name>
 startup_scripts - holds files that will go into kubejs/startup_scripts/<name>
-
 ```
 
 ### Config Example
