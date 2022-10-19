@@ -23,6 +23,7 @@ public class ContentEntry {
     //region Instance Fields
 
     @Expose
+    @SerializedName("name")
     public String Name = "example_entry";
     @SerializedName("displayName")
     @Expose

@@ -9,7 +9,7 @@ import java.lang.Comparable;
 
 public class Version implements Comparable<Version> {
 
-    @SerializedName("Version")
+    @SerializedName("version")
     @Expose
     public String version;
     @SerializedName("URL")
