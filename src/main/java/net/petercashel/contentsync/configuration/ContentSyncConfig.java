@@ -41,6 +41,8 @@ public class ContentSyncConfig {
     @Expose
     public boolean IsConfigured = false;
     @Expose
+    public boolean DisableUI = false;
+    @Expose
     public List<ContentEntry> contentEntriesList = new ArrayList<ContentEntry>();
 
 

@@ -20,7 +20,11 @@ public class ConstructEventWorker implements Runnable {
         this.side = dist;
 
         if (dist == Dist.CLIENT) {
-            ems = new ClientEMS();
+            if (ContentSyncConfig.ConfigInstance.DisableUI) {
+                ems = new ServerEMS();
+            } else {
+                ems = new ClientEMS();
+            }
         } else {
             ems = new ServerEMS();
         }

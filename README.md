@@ -14,7 +14,7 @@ The intented use case is custom blocks and items for a server using KubeJS. And 
 ### How?
 The mod relies on OpenLoader and KubeJS and uses standard resource packs,datapacks and zip files containing organised KubeJS scripts (see KubeJS Section) to bundle the content. On startup, the mod checks the repo urls for that the modpack creator will have set for a content pack of the name indicated (see config and repo format section)
 
-### Startup UI
+### Startup UI (If Enabled)
 This is what the progress window for ContentSync looks like on startup and will display the progress of the autoupdate check and download process.
 Dedicated Servers won't have this and instead will log everything to the console.
 
@@ -33,7 +33,10 @@ startup_scripts - holds files that will go into kubejs/startup_scripts/<name>
 ```
 
 ### Config Example
-The format of the fields is as follows:
+
+The configuration consists of two booleans, and an array of contentEntries (in `contentEntriesList`)
+
+The format of the contentEntry fields is as follows:
 * --Required Fields
 * `name` - Need each entry needs to match the `name` in the Repo Json file. 
 * `URL` - This MUST be a DIRECT LINK to a Repo Json file (see example below).
@@ -44,7 +47,8 @@ The format of the fields is as follows:
 * --Internal Fields
 * `installedVersion` - The currently installed version of a content pack.
 
-Finally, Once your config is ready, Set `IsConfigured` to `true` (default `false`) to enable ContentSync to run. 
+Finally, Once your config is ready, Set `IsConfigured` to `true` (default `false`) to enable ContentSync to run.
+Optionally, you can set `DisableUI` to `true` to disable the on startup UI and force all message to console / log file. DO HOWEVER NOTE, that this will hide any messages telling the user that they need to restart their game after updating KubeJS startupScripts.
 
 Below is an example configuration that is used to test and develop the mod.
 ```

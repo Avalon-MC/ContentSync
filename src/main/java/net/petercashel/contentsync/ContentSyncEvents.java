@@ -39,7 +39,7 @@ public class ContentSyncEvents {
 
         if (CSconfig.IsConfigured) {
             var runner = new ConstructEventWorker(logger, dist);
-             event.enqueueWork(runner);
+            event.enqueueWork(runner);
         }
 
 
