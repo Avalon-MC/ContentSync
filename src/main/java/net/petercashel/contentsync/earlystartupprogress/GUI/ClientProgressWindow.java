@@ -59,7 +59,6 @@ public class ClientProgressWindow {
     public void init(int width, int height, String title) {
         this.windowWidth = width;
         this.windowHeight = height;
-        logger.info("ContentSync: Starting Window");
 
         // Setup an error callback. The default implementation
         // will print the error message in System.err.
@@ -115,7 +114,6 @@ public class ClientProgressWindow {
         glfwFocusWindow(window);
         glfwFocusWindow(window);
         glfwFocusWindow(window);
-        logger.info("ContentSync: Started Window");
     }
 
     public void initGL(Color clearColor) {
@@ -148,7 +146,6 @@ public class ClientProgressWindow {
 
     public int frameCount = 0;
     public void loop() {
-        logger.info("ContentSync: Window Loop Start");
         try {
 
             // Run the rendering loop until the user has attempted to close
@@ -162,7 +159,6 @@ public class ClientProgressWindow {
 
                 if (ShouldStop) {
                     glfwSetWindowShouldClose(window, true);
-                    logger.info("ContentSync: Window Loop Stopping");
                     break;
                 }
 
@@ -270,7 +266,6 @@ public class ClientProgressWindow {
         glfwFreeCallbacks(window);
         glfwDestroyWindow(window);
         Stopped = true;
-        logger.info("ContentSync: Window Loop Stopped");
     }
 
 

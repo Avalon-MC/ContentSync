@@ -28,8 +28,6 @@ public class ConstructEventWorker implements Runnable {
 
     @Override
     public void run() {
-        logger.info("WE RAN! ContentSync Ran!");
-
         ems.SetupMessageSystem(logger, side);
         ems.AddMessageToQueue("Testing", "Startup");
         ems.SetPrimaryProgressBar(1,5);
@@ -42,9 +40,6 @@ public class ConstructEventWorker implements Runnable {
         } finally {
             ems.ShutdownMessageSystem();
         }
-
-
-        logger.info("WE RAN! ContentSync SLEPT!");
     }
 
     private boolean needToRunUpdate = false;

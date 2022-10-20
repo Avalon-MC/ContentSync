@@ -42,6 +42,7 @@ public class ClientEMS implements IEarlyMessageSystem{
             }
         };
         UIUpdateThread = new Thread(r);
+        UIUpdateThread.setName("ContentSync UI Thread");
         UIUpdateThread.setDaemon(true);
         UIUpdateThread.start();
     }
