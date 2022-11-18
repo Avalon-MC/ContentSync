@@ -50,6 +50,9 @@ public class ContentSyncConfig {
 
     // File Paths
 
+    public static File kubejs_assets_kubejs = new File("kubejs/assets/kubejs/").getAbsoluteFile();
+
+
     public static File kubejs_client_scripts = new File("kubejs/client_scripts/").getAbsoluteFile();
     public static File kubejs_server_scripts = new File("kubejs/server_scripts/").getAbsoluteFile();
     public static File kubejs_startup_scripts = new File("kubejs/startup_scripts/").getAbsoluteFile();

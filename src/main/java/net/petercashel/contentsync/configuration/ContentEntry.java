@@ -159,6 +159,8 @@ public class ContentEntry {
 
             ExtractUpdateToFolder(filepath);
 
+            if (type == PackTypeEnum.resourcepack) ExtractUpdateToFolderResourcesExtra();
+
             installedVersion = targetEntry.get().GetLatestVersion(targetVersion).version;
             SaveConfig();
         }
@@ -235,24 +237,77 @@ public class ContentEntry {
         ZipEntry zipEntry = zipFileStream.getNextEntry();
 
         while(zipEntry != null){
-            String fileName = zipEntry.getName();
-            File newFile = new File(filepath + File.separator + fileName);
 
-             //create directories for sub directories in zip
-            new File(newFile.getParent()).mkdirs();
-            if (zipEntry.isDirectory()) {
-                newFile.mkdirs();
-            }
-            else {
-                FileOutputStream fos = new FileOutputStream(newFile);
-                int len;
-                while ((len = zipFileStream.read(buffer)) > 0) {
-                    fos.write(buffer, 0, len);
+            String fileName = zipEntry.getName();
+            {
+                File newFile = new File(filepath + File.separator + fileName);
+
+                //create directories for sub directories in zip
+                new File(newFile.getParent()).mkdirs();
+                if (zipEntry.isDirectory()) {
+                    newFile.mkdirs();
                 }
-                fos.close();
-                //close this ZipEntry
-                zipFileStream.closeEntry();
+                else {
+                    FileOutputStream fos = new FileOutputStream(newFile);
+                    int len;
+                    while ((len = zipFileStream.read(buffer)) > 0) {
+                        fos.write(buffer, 0, len);
+                    }
+                    fos.close();
+
+                    //close this ZipEntry
+                    zipFileStream.closeEntry();
+                }
             }
+            zipEntry = zipFileStream.getNextEntry();
+        }
+        //close last ZipEntry
+        zipFileStream.closeEntry();
+        zipFileStream.close();
+        fileInputStream.close();
+    }
+
+    private void ExtractUpdateToFolderResourcesExtra() throws IOException {
+        //buffer for read and write data to file
+        byte[] buffer = new byte[2048];
+        FileInputStream fileInputStream = new FileInputStream(cachedUpdatePath);
+        ZipInputStream zipFileStream = new ZipInputStream(fileInputStream);
+        ZipEntry zipEntry = zipFileStream.getNextEntry();
+
+        while(zipEntry != null){
+
+            String fileName = zipEntry.getName();
+            {
+                String filepath;
+                if (fileName.startsWith("assets/kubejs")) {
+                    filepath = ContentSyncConfig.kubejs_assets_kubejs.getAbsolutePath();
+                    fileName = fileName.substring("assets/kubejs/".length());
+                    if (fileName.length() == 0) {
+                        zipEntry = zipFileStream.getNextEntry();
+                        continue;
+                    }
+                }
+                else {
+                    zipEntry = zipFileStream.getNextEntry();
+                    continue;
+                }
+
+                if (!zipEntry.isDirectory()) {
+                    File newFile = new File(filepath + File.separator + fileName);
+
+                    //create directories for sub directories in zip
+                    new File(newFile.getParent()).mkdirs();
+                    FileOutputStream fos = new FileOutputStream(newFile);
+                    int len;
+                    while ((len = zipFileStream.read(buffer)) > 0) {
+                        fos.write(buffer, 0, len);
+                    }
+                    fos.close();
+                    //close this ZipEntry
+                    zipFileStream.closeEntry();
+                }
+            }
+
             zipEntry = zipFileStream.getNextEntry();
         }
         //close last ZipEntry
