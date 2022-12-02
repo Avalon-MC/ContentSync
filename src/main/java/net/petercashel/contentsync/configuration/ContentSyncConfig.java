@@ -3,6 +3,9 @@ package net.petercashel.contentsync.configuration;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.annotations.Expose;
+import net.petercashel.contentsync.configuration.base.ContentEntry;
+import net.petercashel.contentsync.configuration.modpack.ModpackContentEntry;
+import net.petercashel.contentsync.configuration.server.ServerContentEntry;
 import org.apache.commons.io.FileUtils;
 
 import java.io.File;
@@ -39,14 +42,44 @@ public class ContentSyncConfig {
     }
 
     @Expose
+    public int ConfigVersion;
+
+    @Expose
     public boolean IsConfigured = false;
     @Expose
     public boolean DisableUI = false;
     @Expose
-    public List<ContentEntry> contentEntriesList = new ArrayList<ContentEntry>();
+    public List<ModpackContentEntry> contentEntriesList = new ArrayList<ModpackContentEntry>();
+
+
+    @Expose
+    public String ThisServerAddress = "";
+    @Expose
+    public String lastServerAddress = "";
+    @Expose
+    public List<ServerContentEntry> serverContentEntriesList = new ArrayList<ServerContentEntry>();
 
 
 
+
+    private void Migrate() {
+        if (ConfigVersion == 0) {
+            this.serverContentEntriesList.add(new ServerContentEntry()); //Default
+            this.lastServerAddress = "";
+
+            ConfigVersion = 1;
+        }
+        if (ConfigVersion == 1) {
+            //Technically, 0 is v1, but 0  is the default value. so jump to 2.
+            ConfigVersion = 2;
+        }
+
+
+
+    }
+
+
+    //Static Stuff
 
     // File Paths
 
@@ -95,9 +128,11 @@ public class ContentSyncConfig {
         }
         if (!cfgFile.exists() || CSconfig == null) {
             CSconfig = new ContentSyncConfig();
-            CSconfig.contentEntriesList.add(new ContentEntry()); //Default
+            CSconfig.contentEntriesList.add(new ModpackContentEntry()); //Default
             cfgFile.getParentFile().mkdirs();
+            CSconfig.ConfigVersion = 0; //Force Upgrade Migration on new file.
         }
+        CSconfig.Migrate();
         return CSconfig;
     }
 

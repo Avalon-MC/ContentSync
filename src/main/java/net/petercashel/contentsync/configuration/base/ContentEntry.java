@@ -1,8 +1,9 @@
-package net.petercashel.contentsync.configuration;
+package net.petercashel.contentsync.configuration.base;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 import com.google.gson.reflect.TypeToken;
+import net.petercashel.contentsync.configuration.ContentSyncConfig;
 import net.petercashel.contentsync.data_formats.packrepo.PackRepoEntry;
 import net.petercashel.contentsync.data_formats.packrepo.PackTypeEnum;
 import net.petercashel.contentsync.utils.WebHelper;
@@ -18,7 +19,7 @@ import java.util.zip.ZipInputStream;
 import static net.petercashel.contentsync.configuration.ContentSyncConfig.SaveConfig;
 import static net.petercashel.contentsync.configuration.ContentSyncConfig.gson;
 
-public class ContentEntry {
+public abstract class ContentEntry {
 
     //region Instance Fields
 
@@ -121,6 +122,9 @@ public class ContentEntry {
 
     public void InstallUpdate() throws IOException {
 
+        UpdateEnabledStatus(ContentSyncConfig.ConfigInstance.lastServerAddress);
+        UpdatePackMetaExtension();
+
         if (IsKubeJSPack()) {
             //More work
             File Target_Client = new File(ContentSyncConfig.kubejs_client_scripts + File.separator + targetEntry.get().name + File.separator);
@@ -137,20 +141,11 @@ public class ContentEntry {
             SaveConfig();
 
         } else {
-            File TargetBase;
-            switch (type) {
-                case datapack -> {
-                    TargetBase = ContentSyncConfig.openloader_datapacks;
-                    break;
-                }
-                case resourcepack -> {
-                    TargetBase = ContentSyncConfig.openloader_resourcepacks;
-                    break;
-                }
-                default -> {
-                    return;
-                }
-            }
+            File TargetBase = null; //Unneeded, is always set but compiler
+
+            if (IsDataPack()) TargetBase = ContentSyncConfig.openloader_datapacks;
+            if (IsResourcePack()) TargetBase = ContentSyncConfig.openloader_resourcepacks;
+
 
             String filepath = TargetBase + File.separator + targetEntry.get().name + File.separator;
             File TargetFolder = new File(filepath);
@@ -164,9 +159,24 @@ public class ContentEntry {
             installedVersion = targetEntry.get().GetLatestVersion(targetVersion).version;
             SaveConfig();
         }
-
-
     }
+
+
+    public String GetFilePathBase () {
+        File TargetBase = null; //Unneeded, is always set but compiler
+
+        if (IsDataPack()) TargetBase = ContentSyncConfig.openloader_datapacks;
+        if (IsResourcePack()) TargetBase = ContentSyncConfig.openloader_resourcepacks;
+
+
+        String filepath = TargetBase + File.separator + targetEntry.get().name + File.separator;
+        return filepath;
+    }
+
+
+    public abstract void UpdateEnabledStatus(String LastServerName);
+    public abstract void UpdatePackMetaExtension();
+
 
     private void ExtractUpdateKubeJSToFolder(String clientPath, String serverPath, String startupPath) throws IOException {
         //buffer for read and write data to file

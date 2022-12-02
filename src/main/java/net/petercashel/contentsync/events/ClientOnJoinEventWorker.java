@@ -6,35 +6,27 @@ import net.petercashel.contentsync.configuration.modpack.ModpackContentEntry;
 import net.petercashel.contentsync.configuration.server.ServerContentEntry;
 import net.petercashel.contentsync.earlystartupprogress.ClientEMS;
 import net.petercashel.contentsync.earlystartupprogress.IEarlyMessageSystem;
+import net.petercashel.contentsync.earlystartupprogress.IngameEMS;
 import net.petercashel.contentsync.earlystartupprogress.ServerEMS;
 import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 
-public class ConstructEventWorker implements Runnable {
+public class ClientOnJoinEventWorker implements Runnable {
     private final Logger logger;
     private final Dist side;
     private final IEarlyMessageSystem ems;
 
-    public ConstructEventWorker(Logger logger, Dist dist) {
+    public ClientOnJoinEventWorker(Logger logger, Dist dist) {
         this.logger = logger;
         this.side = dist;
 
-        if (dist == Dist.CLIENT) {
-            if (ContentSyncConfig.ConfigInstance.DisableUI) {
-                ems = new ServerEMS();
-            } else {
-                ems = new ClientEMS();
-            }
-        } else {
-            ems = new ServerEMS();
-        }
+        ems = new IngameEMS();
     }
 
     @Override
     public void run() {
         ems.SetupMessageSystem(logger, side);
-        ems.AddMessageToQueue("Testing", "Startup");
         ems.SetPrimaryProgressBar(1,5);
         try {
             DoWorkerTask();
@@ -47,7 +39,7 @@ public class ConstructEventWorker implements Runnable {
         }
     }
 
-    private boolean needToRunUpdate = false;
+    public boolean needToRunUpdate = false;
     private int currentTaskIndex = 0;
     private int totalTasks = 0;
 
@@ -56,30 +48,6 @@ public class ConstructEventWorker implements Runnable {
         Thread.sleep(200);
 
         if (needToRunUpdate) {
-            for (int i = 0; i < ContentSyncConfig.ConfigInstance.contentEntriesList.size(); i++) {
-                ModpackContentEntry entry = ContentSyncConfig.ConfigInstance.contentEntriesList.get(i);
-                if (entry.UpdateAvailable) {
-                    try {
-                        ems.AddMessageToQueue("Downloading ContentPack Update", entry.GetDisplayName());
-                        currentTaskIndex++;
-                        ems.SetPrimaryProgressBar(currentTaskIndex, totalTasks);
-                        entry.DownloadUpdate();
-                        Thread.sleep(200);
-                        ems.AddMessageToQueue("Installing ContentPack Update", entry.GetDisplayName());
-                        currentTaskIndex++;
-                        ems.SetPrimaryProgressBar(currentTaskIndex, totalTasks);
-                        entry.InstallUpdate();
-                        Thread.sleep(200);
-                        entry.CleanUpCacheFile();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                        ems.AddMessageToQueue("Error Installing ContentPack Update", entry.GetDisplayName());
-                        Thread.sleep(1000);
-                    }
-                }
-
-            }
-
             for (int i = 0; i < ContentSyncConfig.ConfigInstance.serverContentEntriesList.size(); i++) {
                 ServerContentEntry entry = ContentSyncConfig.ConfigInstance.serverContentEntriesList.get(i);
                 if (entry.UpdateAvailable) {
@@ -108,34 +76,16 @@ public class ConstructEventWorker implements Runnable {
             currentTaskIndex = totalTasks;
             ems.SetPrimaryProgressBar(currentTaskIndex, totalTasks);
 
-            if (ContentSyncConfig.HadKubeJSStartupScriptsUpdate) {
-                ems.AddMessageToQueue("Update Complete", "You will need to restart minecraft@;@;to finish the update.");
-                Thread.sleep(2200);
-            } else {
-                ems.AddMessageToQueue("Update Complete", "Have a great day!");
-                Thread.sleep(200);
-            }
+            ems.AddMessageToQueue("Update Complete", "Have a great day! If you wish to apply any resoucepack changes now, Hold F3 and press T, to reload textures.");
+            Thread.sleep(200);
         }
 
     }
 
     private void CheckForUpdates() throws InterruptedException {
         currentTaskIndex = 0;
-        totalTasks = ContentSyncConfig.ConfigInstance.contentEntriesList.size() + ContentSyncConfig.ConfigInstance.serverContentEntriesList.size();
+        totalTasks = ContentSyncConfig.ConfigInstance.serverContentEntriesList.size();
         ems.SetPrimaryProgressBar(currentTaskIndex, totalTasks);
-
-        for (int i = 0; i < ContentSyncConfig.ConfigInstance.contentEntriesList.size(); i++) {
-            ems.AddMessageToQueue("Checking for ContentPack Updates", ContentSyncConfig.ConfigInstance.contentEntriesList.get(i).GetDisplayName());
-            boolean hasUpdates = ContentSyncConfig.ConfigInstance.contentEntriesList.get(i).CheckForUpdates();
-            if (hasUpdates) {
-                totalTasks += 2;
-                needToRunUpdate = true;
-            }
-
-            currentTaskIndex++;
-            ems.SetPrimaryProgressBar(currentTaskIndex, totalTasks);
-            Thread.sleep(200);
-        }
 
         for (int i = 0; i < ContentSyncConfig.ConfigInstance.serverContentEntriesList.size(); i++) {
             ContentSyncConfig.ConfigInstance.serverContentEntriesList.get(i).UpdateEnabledStatus(ContentSyncConfig.ConfigInstance.lastServerAddress);
