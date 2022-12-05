@@ -14,6 +14,7 @@ import net.minecraftforge.fml.event.lifecycle.InterModEnqueueEvent;
 import net.minecraftforge.fml.event.lifecycle.InterModProcessEvent;
 import net.minecraftforge.event.server.ServerStartingEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.minecraftforge.network.NetworkEvent;
 import net.petercashel.contentsync.configuration.ContentSyncConfig;
 import net.petercashel.contentsync.network.ContentSyncServer;
 import net.petercashel.contentsync.network.PacketHandler;
@@ -29,7 +30,6 @@ public class ContentSync
     private static final Logger LOGGER = LogUtils.getLogger();
 
     public static final String MODID = "contentsync";
-    public ContentSyncConfig contentSyncConfig = null;
 
     public ContentSync()
     {

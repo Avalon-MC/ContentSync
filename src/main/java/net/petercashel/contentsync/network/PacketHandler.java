@@ -11,9 +11,10 @@ import net.petercashel.contentsync.ContentSync;
 
 public class PacketHandler {
 
-    private static final String PROTOCOL_VERSION = "1";
+    private static final String PROTOCOL_VERSION = "2";
+    public static ResourceLocation NETCHANNEL = new ResourceLocation(ContentSync.MODID, "main");
     public static final SimpleChannel INSTANCE = NetworkRegistry.newSimpleChannel(
-            new ResourceLocation(ContentSync.MODID, "main"),
+            NETCHANNEL,
             () -> PROTOCOL_VERSION,
             PROTOCOL_VERSION::equals,
             PROTOCOL_VERSION::equals

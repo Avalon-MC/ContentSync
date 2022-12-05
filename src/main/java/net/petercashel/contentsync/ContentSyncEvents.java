@@ -18,24 +18,19 @@ public class ContentSyncEvents {
 
     @SubscribeEvent
     static void onConstructMod(FMLConstructModEvent event) {
-        ContentSyncConfig CSconfig = ContentSyncConfig.LoadConfig();
-        ContentSyncConfig.SaveConfig();
-
-        Dist dist = FMLEnvironment.dist;
-        ModLoadingContext context = ModLoadingContext.get();
-        Logger logger = LogManager.getLogger(context.getActiveContainer().getModId());
-
-        ContentSync contentSync = (ContentSync) context.getActiveContainer().getMod();
-        contentSync.contentSyncConfig = CSconfig;
-
-        if (CSconfig.IsConfigured) {
-            var runner = new ConstructEventWorker(logger, dist);
-            event.enqueueWork(runner);
-        }
-
-
+//        ContentSyncConfig CSconfig = ContentSyncConfig.LoadConfig();
+//        ContentSyncConfig.SaveConfig();
+//
+//        Dist dist = FMLEnvironment.dist;
+//        ModLoadingContext context = ModLoadingContext.get();
+//        Logger logger = LogManager.getLogger(context.getActiveContainer().getModId());
+//
+//        ContentSync contentSync = (ContentSync) context.getActiveContainer().getMod();
+//        contentSync.contentSyncConfig = CSconfig;
+//
+//        if (CSconfig.IsConfigured) {
+//            var runner = new ConstructEventWorker(logger, dist);
+//            event.enqueueWork(runner);
+//        }
     }
-
-
-
 }
