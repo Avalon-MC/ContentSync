@@ -15,6 +15,7 @@ public abstract class BaseContentSyncWorker implements Runnable {
     private final Logger logger;
     private final Dist side;
     private final IEarlyMessageSystem ems;
+    protected int StartupSleepTime = 0;
     public boolean DoGlobalPacks = true;
     public boolean DoServerPacks = true;
 
@@ -39,11 +40,14 @@ public abstract class BaseContentSyncWorker implements Runnable {
         }
     }
 
-    private boolean needToRunUpdate = false;
+    public boolean needToRunUpdate = false;
     private int currentTaskIndex = 0;
     private int totalTasks = 0;
 
     private void DoWorkerTask() throws InterruptedException {
+        //Allow for different variants to wait for things
+        if (StartupSleepTime != 0) Thread.sleep(StartupSleepTime);
+
         CheckForUpdates();
         Thread.sleep(200);
 

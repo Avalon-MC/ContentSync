@@ -14,11 +14,11 @@ import java.io.IOException;
 
 public class ClientOnJoinEventWorker extends BaseContentSyncWorker {
 
-
     public ClientOnJoinEventWorker(Logger logger, Dist dist) {
         super(logger, dist, new IngameEMS());
 
         DoGlobalPacks = false;
+        StartupSleepTime = 10000;
     }
 
 
