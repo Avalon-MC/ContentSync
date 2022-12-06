@@ -1,5 +1,8 @@
 package net.petercashel.contentsync.earlystartupprogress.GUI.Controls;
 
+import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.gui.GuiComponent;
+import net.minecraft.client.gui.screens.Screen;
 import net.petercashel.contentsync.earlystartupprogress.GUI.Core.Color;
 import org.lwjgl.opengl.GL11;
 
@@ -73,5 +76,33 @@ public class ProgressBar implements IUIRenderable{
         if (value > max) {
             value = max;
         }
+    }
+
+    public void render(PoseStack pPoseStack, Screen instance) {
+
+        fill(pPoseStack, x,y,x+width, y+height, backColor.pack());
+
+        float x1 = x + border;
+        float y1 = y + border;
+        float width1 = width - (border * 2);
+        float height1 = height - (border * 2);
+
+        float percent = (value / max) * 100f;
+
+        width1 = (width1 / 100) * percent;
+
+
+        if (value != 0) {
+            fill(pPoseStack, x1,y1, x1 +width1, y1+ height1, barColor.pack());
+        }
+
+    }
+
+    private void fill(PoseStack pPoseStack, float x1, float y1, float v, float v1, int pack) {
+        GuiComponent.fill(pPoseStack, (int)x1,(int)y1,(int)v, (int)v1, pack);
+    }
+
+    public int GetHeight() {
+        return (int) height;
     }
 }

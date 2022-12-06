@@ -19,7 +19,7 @@ import java.util.zip.ZipInputStream;
 import static net.petercashel.contentsync.configuration.ContentSyncConfig.SaveConfig;
 import static net.petercashel.contentsync.configuration.ContentSyncConfig.gson;
 
-public abstract class ContentEntry {
+public abstract class ContentEntry implements IPackEntry {
 
     //region Instance Fields
 
@@ -41,6 +41,7 @@ public abstract class ContentEntry {
     //endregion
     //region Helpers
 
+    @Override
     public String GetDisplayName() {
         if (displayName != null && !displayName.isBlank()) {
             return displayName;
@@ -48,14 +49,36 @@ public abstract class ContentEntry {
         return Name;
     }
 
+    @Override
+    public String GetName() {
+        return Name;
+    }
+
+    @Override
+    public String GetURL() {
+        return URL;
+    }
+
+    @Override
+    public String GetInstalledVersion() {
+        return installedVersion;
+    }
+    @Override
+    public String GetTargetVersion() {
+        return targetVersion;
+    }
+
+    @Override
     public boolean IsResourcePack() {
         return type == PackTypeEnum.resourcepack;
     }
 
+    @Override
     public boolean IsDataPack() {
         return type == PackTypeEnum.datapack;
     }
 
+    @Override
     public boolean IsKubeJSPack() {
         return type == PackTypeEnum.kubejs;
     }

@@ -45,7 +45,7 @@ public abstract class BaseContentSyncWorker implements Runnable {
     private int totalTasks = 0;
 
     private void DoWorkerTask() throws InterruptedException {
-        //Allow for different variants to wait for things
+        //Allow for different variants to wait for things like screen startup or game login
         if (StartupSleepTime != 0) Thread.sleep(StartupSleepTime);
 
         CheckForUpdates();

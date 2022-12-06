@@ -3,6 +3,7 @@ package net.petercashel.contentsync.earlystartupprogress.GUI.Core;
 public class Color {
 
         public static final Color WHITE = new Color(1f, 1f, 1f);
+        public static final Color GRAY = new Color(0.75f, 0.75f, 0.75f);
         public static final Color BLACK = new Color(0f, 0f, 0f);
         public static final Color RED = new Color(1f, 0f, 0f);
         public static final Color GREEN = new Color(0f, 1f, 0f);
@@ -207,5 +208,16 @@ public class Color {
          */
         public void setAlpha(int alpha) {
             setAlpha(alpha / 255f);
+        }
+
+        public int pack() {
+            //AARRGGBB
+            int value = (int) (getBlue() * 255f);
+            value |= (int) (getGreen() * 255f) << 8;
+            value |= (int) (getRed() * 255f) << 16;
+            value |= (int) (getAlpha() * 255f) << 24;
+
+            return (int)value;
+
         }
 }

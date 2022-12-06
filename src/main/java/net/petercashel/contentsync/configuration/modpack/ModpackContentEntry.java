@@ -12,4 +12,14 @@ public class ModpackContentEntry extends ContentEntry {
     public void UpdatePackMetaExtension() {
 
     }
+
+    @Override
+    public boolean IsServerPack() {
+        return false;
+    }
+
+    @Override
+    public boolean IsEnabled() {
+        return true;
+    }
 }

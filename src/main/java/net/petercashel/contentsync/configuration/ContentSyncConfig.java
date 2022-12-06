@@ -3,7 +3,7 @@ package net.petercashel.contentsync.configuration;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.annotations.Expose;
-import net.petercashel.contentsync.configuration.base.ContentEntry;
+import net.petercashel.contentsync.configuration.base.IPackEntry;
 import net.petercashel.contentsync.configuration.modpack.ModpackContentEntry;
 import net.petercashel.contentsync.configuration.server.ServerContentEntry;
 import org.apache.commons.io.FileUtils;
@@ -46,6 +46,8 @@ public class ContentSyncConfig {
 
     @Expose
     public boolean IsConfigured = false;
+    @Expose
+    public boolean HideMenuButton = false;
     @Expose
     public boolean DisableUI = false;
     @Expose
@@ -143,5 +145,23 @@ public class ContentSyncConfig {
 
     public static void SaveConfig() {
         SaveConfig(cfgFile, ConfigInstance);
+    }
+
+    public List<IPackEntry> GetAllPackEntries() {
+        ArrayList<IPackEntry> entries = new ArrayList<>();
+
+        entries.addAll(contentEntriesList);
+        entries.addAll(serverContentEntriesList);
+
+        return entries;
+    }
+
+    public void ToggleEntry(IPackEntry entry) {
+        for (ServerContentEntry serverContentEntry : serverContentEntriesList) {
+            if (serverContentEntry.GetName().equals(entry.GetName())) {
+                serverContentEntry.Enabled = !serverContentEntry.Enabled;
+            }
+        }
+        SaveConfig();
     }
 }

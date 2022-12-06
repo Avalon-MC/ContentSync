@@ -59,6 +59,7 @@ minecraft {
     runs {
         client {
             workingDirectory project.file('run')
+            jvmArg "-XX:+AllowEnhancedClassRedefinition"
 
             property 'mixin.env.remapRefMap', 'true'
             property 'mixin.env.refMapRemappingFile', "${projectDir}/build/createSrgToMcp/output.srg"

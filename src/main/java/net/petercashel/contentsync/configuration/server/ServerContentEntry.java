@@ -79,4 +79,14 @@ public class ServerContentEntry extends ContentEntry {
 
         return entry;
     }
+
+    @Override
+    public boolean IsServerPack() {
+        return true;
+    }
+
+    @Override
+    public boolean IsEnabled() {
+        return Enabled;
+    }
 }
