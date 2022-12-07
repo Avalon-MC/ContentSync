@@ -16,7 +16,7 @@ public class ConstructEventWorker extends BaseContentSyncWorker {
 
     private static IEarlyMessageSystem getEMS(Dist dist) {
         if (dist == Dist.CLIENT) {
-            if (ContentSyncConfig.ConfigInstance.DisableUI) {
+            if (ContentSyncConfig.ConfigInstance.CommonSettings.DisableUI) {
                 return new ServerEMS();
             } else {
                 return new ClientEMS();

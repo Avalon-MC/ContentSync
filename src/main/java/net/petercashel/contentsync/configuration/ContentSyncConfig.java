@@ -18,6 +18,64 @@ import java.util.List;
 
 public class ContentSyncConfig {
 
+
+    @Expose
+    public int ConfigVersion = 3;
+
+    @Expose
+    public CommonSettings CommonSettings = new CommonSettings();
+    public class CommonSettings {
+        @Expose
+        public boolean IsConfigured = false;
+        @Expose
+        public boolean HideMenuButton = false;
+        @Expose
+        public boolean DisableUI = false;
+    }
+
+    @Expose
+    public CommonPackSettings CommonPackSettings = new CommonPackSettings();
+    public class CommonPackSettings {
+        @Expose
+        public List<ModpackContentEntry> contentEntriesList = new ArrayList<ModpackContentEntry>();
+
+    }
+
+    @Expose
+    public ServerPackSettings ServerPackSettings = new ServerPackSettings();
+    public class ServerPackSettings {
+        @Expose
+        public List<ServerContentEntry> serverContentEntriesList = new ArrayList<ServerContentEntry>();
+
+    }
+
+
+    @Expose
+    public HostingServerSettings HostingServerSettings = new HostingServerSettings();
+    public class HostingServerSettings {
+        @Expose
+        public String ThisServerAddress = "";
+        @Expose
+        public boolean EnforceServerPacks = true;
+
+    }
+
+    @Expose
+    public ClientSettings ClientSettings = new ClientSettings();
+    public class ClientSettings {
+        @Expose
+        public String lastServerAddress = "";
+
+    }
+
+
+
+
+
+
+
+
+
     public ContentSyncConfig() {
         try {
             MakeClean(cacheFolder);
@@ -41,41 +99,8 @@ public class ContentSyncConfig {
         if (!TargetFolder.exists()) TargetFolder.mkdirs();
     }
 
-    @Expose
-    public int ConfigVersion;
-
-    @Expose
-    public boolean IsConfigured = false;
-    @Expose
-    public boolean HideMenuButton = false;
-    @Expose
-    public boolean DisableUI = false;
-    @Expose
-    public List<ModpackContentEntry> contentEntriesList = new ArrayList<ModpackContentEntry>();
-
-
-    @Expose
-    public String ThisServerAddress = "";
-    @Expose
-    public String lastServerAddress = "";
-    @Expose
-    public List<ServerContentEntry> serverContentEntriesList = new ArrayList<ServerContentEntry>();
-
-
-
 
     private void Migrate() {
-        if (ConfigVersion == 0) {
-            this.serverContentEntriesList.add(new ServerContentEntry()); //Default
-            this.lastServerAddress = "";
-
-            ConfigVersion = 1;
-        }
-        if (ConfigVersion == 1) {
-            //Technically, 0 is v1, but 0  is the default value. so jump to 2.
-            ConfigVersion = 2;
-        }
-
 
 
     }
@@ -127,12 +152,60 @@ public class ContentSyncConfig {
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
+            if (CSconfig.ConfigVersion < 3) {
+                //Load Old format in new structure
+                try {
+                    // create a reader
+                    Reader reader = Files.newBufferedReader(cfgFile.toPath());
+
+                    var CommonSettings = gson.fromJson(reader, ContentSyncConfig.CommonSettings.class);
+                    reader.close();
+                    reader = Files.newBufferedReader(cfgFile.toPath());
+                    var CommonPackSettings = gson.fromJson(reader, ContentSyncConfig.CommonPackSettings.class);
+                    reader.close();
+                    reader = Files.newBufferedReader(cfgFile.toPath());
+                    var ServerPackSettings = gson.fromJson(reader, ContentSyncConfig.ServerPackSettings.class);
+                    reader.close();
+                    reader = Files.newBufferedReader(cfgFile.toPath());
+                    var HostingServerSettings = gson.fromJson(reader, ContentSyncConfig.HostingServerSettings.class);
+                    reader.close();
+                    reader = Files.newBufferedReader(cfgFile.toPath());
+                    var ClientSettings = gson.fromJson(reader, ContentSyncConfig.ClientSettings.class);
+
+                    // close reader
+                    reader.close();
+
+
+                    CSconfig = new ContentSyncConfig();
+                    CSconfig.ConfigVersion = 3;
+
+                    if (CommonSettings != null) {
+                        CSconfig.CommonSettings = CommonSettings;
+                    }
+                    if (CommonPackSettings != null) {
+                        CSconfig.CommonPackSettings = CommonPackSettings;
+                    }
+                    if (ServerPackSettings != null) {
+                        CSconfig.ServerPackSettings = ServerPackSettings;
+                    }
+                    if (HostingServerSettings != null) {
+                        CSconfig.HostingServerSettings = HostingServerSettings;
+                    }
+                    if (ClientSettings != null) {
+                        CSconfig.ClientSettings = ClientSettings;
+                    }
+
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+
+            }
         }
         if (!cfgFile.exists() || CSconfig == null) {
             CSconfig = new ContentSyncConfig();
-            CSconfig.contentEntriesList.add(new ModpackContentEntry()); //Default
+            CSconfig.CommonPackSettings.contentEntriesList.add(new ModpackContentEntry()); //Default
+            CSconfig.ServerPackSettings.serverContentEntriesList.add(new ServerContentEntry()); //Default
             cfgFile.getParentFile().mkdirs();
-            CSconfig.ConfigVersion = 0; //Force Upgrade Migration on new file.
         }
         CSconfig.Migrate();
         return CSconfig;
@@ -140,6 +213,18 @@ public class ContentSyncConfig {
 
     public static ContentSyncConfig LoadConfig() {
         ConfigInstance = LoadConfig(cfgFile, ConfigInstance);
+
+        if (ConfigInstance.ServerPackSettings.serverContentEntriesList == null) {
+            ConfigInstance.ServerPackSettings.serverContentEntriesList = new ArrayList<>();
+        }
+        if (ConfigInstance.CommonPackSettings.contentEntriesList == null) {
+            ConfigInstance.CommonPackSettings.contentEntriesList = new ArrayList<>();
+        }
+
+        if (!ConfigInstance.ServerPackSettings.serverContentEntriesList.isEmpty() || !ConfigInstance.CommonPackSettings.contentEntriesList.isEmpty()) {
+            ConfigInstance.CommonSettings.IsConfigured = true;
+        }
+
         return ConfigInstance;
     }
 
@@ -150,14 +235,14 @@ public class ContentSyncConfig {
     public List<IPackEntry> GetAllPackEntries() {
         ArrayList<IPackEntry> entries = new ArrayList<>();
 
-        entries.addAll(contentEntriesList);
-        entries.addAll(serverContentEntriesList);
+        entries.addAll(CommonPackSettings.contentEntriesList);
+        entries.addAll(ServerPackSettings.serverContentEntriesList);
 
         return entries;
     }
 
     public void ToggleEntry(IPackEntry entry) {
-        for (ServerContentEntry serverContentEntry : serverContentEntriesList) {
+        for (ServerContentEntry serverContentEntry : ServerPackSettings.serverContentEntriesList) {
             if (serverContentEntry.GetName().equals(entry.GetName())) {
                 serverContentEntry.Enabled = !serverContentEntry.Enabled;
             }

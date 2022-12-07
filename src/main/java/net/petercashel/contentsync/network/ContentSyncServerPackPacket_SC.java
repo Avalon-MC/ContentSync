@@ -18,7 +18,8 @@ public class ContentSyncServerPackPacket_SC {
     public ContentSyncServerPackPacket_SC(List<ServerContentEntry> serverContentEntriesList) {
         rootTag = new CompoundTag();
         rootTag.putInt("count", serverContentEntriesList.size());
-        rootTag.putString("servername", ContentSyncConfig.ConfigInstance.ThisServerAddress);
+        rootTag.putString("servername", ContentSyncConfig.ConfigInstance.HostingServerSettings.ThisServerAddress);
+        rootTag.putBoolean("enforceserverpacks", ContentSyncConfig.ConfigInstance.HostingServerSettings.EnforceServerPacks);
 
         for (int i = 0; i < serverContentEntriesList.size(); i++) {
             CompoundTag itemTag = serverContentEntriesList.get(i).serialise(new CompoundTag());
@@ -53,13 +54,14 @@ public class ContentSyncServerPackPacket_SC {
                 List<ServerContentEntry> serverContentEntriesList = new ArrayList<>();
                 int count = rootTag.getInt("count");
                 String ServerName = rootTag.getString("servername");
+                Boolean EnforceServerPacks = rootTag.getBoolean("enforceserverpacks");
 
                 for (int i = 0; i < count; i++) {
                     CompoundTag itemTag = rootTag.getCompound(Integer.toString(i));
                     serverContentEntriesList.add(ServerContentEntry.deserialise(itemTag));
                 }
 
-                ContentSyncClient.Process(serverContentEntriesList, ServerName);
+                ContentSyncClient.Process(serverContentEntriesList, ServerName, EnforceServerPacks);
 
             } catch (Exception ex) {
                 //Fail

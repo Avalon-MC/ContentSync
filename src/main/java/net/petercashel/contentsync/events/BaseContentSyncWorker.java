@@ -53,8 +53,8 @@ public abstract class BaseContentSyncWorker implements Runnable {
 
         if (needToRunUpdate) {
             if (DoGlobalPacks) {
-                for (int i = 0; i < ContentSyncConfig.ConfigInstance.contentEntriesList.size(); i++) {
-                    ModpackContentEntry entry = ContentSyncConfig.ConfigInstance.contentEntriesList.get(i);
+                for (int i = 0; i < ContentSyncConfig.ConfigInstance.CommonPackSettings.contentEntriesList.size(); i++) {
+                    ModpackContentEntry entry = ContentSyncConfig.ConfigInstance.CommonPackSettings.contentEntriesList.get(i);
                     if (entry.UpdateAvailable) {
                         try {
                             ems.AddMessageToQueue("Downloading ContentPack Update", entry.GetDisplayName());
@@ -78,8 +78,8 @@ public abstract class BaseContentSyncWorker implements Runnable {
             }
 
             if (DoServerPacks) {
-                for (int i = 0; i < ContentSyncConfig.ConfigInstance.serverContentEntriesList.size(); i++) {
-                    ServerContentEntry entry = ContentSyncConfig.ConfigInstance.serverContentEntriesList.get(i);
+                for (int i = 0; i < ContentSyncConfig.ConfigInstance.ServerPackSettings.serverContentEntriesList.size(); i++) {
+                    ServerContentEntry entry = ContentSyncConfig.ConfigInstance.ServerPackSettings.serverContentEntriesList.get(i);
                     if (entry.UpdateAvailable) {
                         try {
                             ems.AddMessageToQueue("Downloading ServerPack Update", entry.GetDisplayName());
@@ -121,9 +121,9 @@ public abstract class BaseContentSyncWorker implements Runnable {
         ems.SetPrimaryProgressBar(currentTaskIndex, totalTasks);
 
         if (DoGlobalPacks) {
-            for (int i = 0; i < ContentSyncConfig.ConfigInstance.contentEntriesList.size(); i++) {
-                ems.AddMessageToQueue("Checking for ContentPack Updates", ContentSyncConfig.ConfigInstance.contentEntriesList.get(i).GetDisplayName());
-                boolean hasUpdates = ContentSyncConfig.ConfigInstance.contentEntriesList.get(i).CheckForUpdates();
+            for (int i = 0; i < ContentSyncConfig.ConfigInstance.CommonPackSettings.contentEntriesList.size(); i++) {
+                ems.AddMessageToQueue("Checking for ContentPack Updates", ContentSyncConfig.ConfigInstance.CommonPackSettings.contentEntriesList.get(i).GetDisplayName());
+                boolean hasUpdates = ContentSyncConfig.ConfigInstance.CommonPackSettings.contentEntriesList.get(i).CheckForUpdates();
                 if (hasUpdates) {
                     totalTasks += 2;
                     needToRunUpdate = true;
@@ -136,12 +136,12 @@ public abstract class BaseContentSyncWorker implements Runnable {
         }
 
         if (DoServerPacks) {
-            for (int i = 0; i < ContentSyncConfig.ConfigInstance.serverContentEntriesList.size(); i++) {
-                ContentSyncConfig.ConfigInstance.serverContentEntriesList.get(i).UpdateEnabledStatus(ContentSyncConfig.ConfigInstance.lastServerAddress);
-                if (ContentSyncConfig.ConfigInstance.serverContentEntriesList.get(i).Enabled) {
-                    ems.AddMessageToQueue("Checking for ServerPack Updates", ContentSyncConfig.ConfigInstance.serverContentEntriesList.get(i).GetDisplayName());
-                    boolean hasUpdates = ContentSyncConfig.ConfigInstance.serverContentEntriesList.get(i).CheckForUpdates();
-                    if (hasUpdates && isCorrectSide(side, ContentSyncConfig.ConfigInstance.serverContentEntriesList.get(i))) {
+            for (int i = 0; i < ContentSyncConfig.ConfigInstance.ServerPackSettings.serverContentEntriesList.size(); i++) {
+                ContentSyncConfig.ConfigInstance.ServerPackSettings.serverContentEntriesList.get(i).UpdateEnabledStatus(ContentSyncConfig.ConfigInstance.ClientSettings.lastServerAddress);
+                if (ContentSyncConfig.ConfigInstance.ServerPackSettings.serverContentEntriesList.get(i).Enabled) {
+                    ems.AddMessageToQueue("Checking for ServerPack Updates", ContentSyncConfig.ConfigInstance.ServerPackSettings.serverContentEntriesList.get(i).GetDisplayName());
+                    boolean hasUpdates = ContentSyncConfig.ConfigInstance.ServerPackSettings.serverContentEntriesList.get(i).CheckForUpdates();
+                    if (hasUpdates && isCorrectSide(side, ContentSyncConfig.ConfigInstance.ServerPackSettings.serverContentEntriesList.get(i))) {
                         totalTasks += 2;
                         needToRunUpdate = true;
                     }
@@ -157,9 +157,9 @@ public abstract class BaseContentSyncWorker implements Runnable {
     }
 
     public int GetTotalTasks() {
-        if (DoGlobalPacks && DoServerPacks) return ContentSyncConfig.ConfigInstance.contentEntriesList.size() + ContentSyncConfig.ConfigInstance.serverContentEntriesList.size();
-        if (DoGlobalPacks) return ContentSyncConfig.ConfigInstance.contentEntriesList.size();
-        if (DoServerPacks) return ContentSyncConfig.ConfigInstance.serverContentEntriesList.size();
+        if (DoGlobalPacks && DoServerPacks) return ContentSyncConfig.ConfigInstance.CommonPackSettings.contentEntriesList.size() + ContentSyncConfig.ConfigInstance.ServerPackSettings.serverContentEntriesList.size();
+        if (DoGlobalPacks) return ContentSyncConfig.ConfigInstance.CommonPackSettings.contentEntriesList.size();
+        if (DoServerPacks) return ContentSyncConfig.ConfigInstance.ServerPackSettings.serverContentEntriesList.size();
         return 0;
     }
 

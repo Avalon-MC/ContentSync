@@ -17,17 +17,17 @@ public class ContentSyncServer {
         }
 
         //Empty? Stop
-        if (ContentSyncConfig.ConfigInstance.serverContentEntriesList.size() == 0) {
+        if (ContentSyncConfig.ConfigInstance.ServerPackSettings.serverContentEntriesList.size() == 0) {
             return;
         }
 
         //Invalid Name
-        if (ContentSyncConfig.ConfigInstance.ThisServerAddress.length() <= 1) {
+        if (ContentSyncConfig.ConfigInstance.HostingServerSettings.ThisServerAddress.length() <= 1) {
             return;
         }
 
         //Send list to packet, but none of the server only ones.
-        List<ServerContentEntry> list = ContentSyncConfig.ConfigInstance.serverContentEntriesList.stream().filter(x -> x.ServerOnly == false).toList();
+        List<ServerContentEntry> list = ContentSyncConfig.ConfigInstance.ServerPackSettings.serverContentEntriesList.stream().filter(x -> x.ServerOnly == false).toList();
         ContentSyncServerPackPacket_SC packet = new ContentSyncServerPackPacket_SC(list);
 
         //Send Packet

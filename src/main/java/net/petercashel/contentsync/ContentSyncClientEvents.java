@@ -18,7 +18,7 @@ public class ContentSyncClientEvents {
     @SubscribeEvent
     public static void onScreenOpenEvent (ScreenOpenEvent event) {
         if (event.getScreen() instanceof TitleScreen && mainButton != null) {
-            if (!ContentSyncConfig.ConfigInstance.IsConfigured|| ContentSyncConfig.ConfigInstance.HideMenuButton) return;
+            if (!ContentSyncConfig.ConfigInstance.CommonSettings.IsConfigured|| ContentSyncConfig.ConfigInstance.CommonSettings.HideMenuButton) return;
             int width = event.getScreen().width;
             int height = event.getScreen().height;
             int l = height / 4 + 48;
@@ -38,7 +38,7 @@ public class ContentSyncClientEvents {
     public static void onInitScreenEvent (ScreenEvent.InitScreenEvent.Post event) {
         if (event.getScreen() instanceof TitleScreen) {
 
-            if (!ContentSyncConfig.ConfigInstance.IsConfigured || ContentSyncConfig.ConfigInstance.HideMenuButton) return;
+            if (!ContentSyncConfig.ConfigInstance.CommonSettings.IsConfigured || ContentSyncConfig.ConfigInstance.CommonSettings.HideMenuButton) return;
 
             int width = event.getScreen().width;
             int height = event.getScreen().height;

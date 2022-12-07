@@ -93,7 +93,9 @@ public abstract class ContentEntry implements IPackEntry {
 
     public boolean CheckForUpdates() {
         boolean needsUpdate = type == null || installedVersion.isBlank();
-
+        if (this.Name.isBlank() || this.Name.length() < 2) {
+            return false;
+        }
         try {
             String indexJson = WebHelper.DownloadURLAsString(URL);
 
@@ -145,7 +147,7 @@ public abstract class ContentEntry implements IPackEntry {
 
     public void InstallUpdate() throws IOException {
 
-        UpdateEnabledStatus(ContentSyncConfig.ConfigInstance.lastServerAddress);
+        UpdateEnabledStatus(ContentSyncConfig.ConfigInstance.ClientSettings.lastServerAddress);
         UpdatePackMetaExtension();
 
         if (IsKubeJSPack()) {

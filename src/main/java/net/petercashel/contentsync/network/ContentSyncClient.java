@@ -5,21 +5,17 @@ import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.ConfirmScreen;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.multiplayer.ServerData;
-import net.minecraft.client.multiplayer.ServerList;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.chat.TranslatableComponent;
-import net.minecraft.network.protocol.game.ServerboundResourcePackPacket;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.loading.FMLEnvironment;
 import net.petercashel.contentsync.configuration.ContentSyncConfig;
 import net.petercashel.contentsync.configuration.server.ServerContentEntry;
 import net.petercashel.contentsync.events.ClientOnJoinEventWorker;
-import net.petercashel.contentsync.events.ConstructEventWorker;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -28,12 +24,12 @@ import java.util.Optional;
 
 public class ContentSyncClient {
 
-    public static void Process(List<ServerContentEntry> serverContentEntriesList, String ServerName) {
+    public static void Process(List<ServerContentEntry> serverContentEntriesList, String ServerName, Boolean EnforceServerPacks) {
         //Handle Ingest to configs
         boolean restartNeeded = false;
 
-        if (ContentSyncConfig.ConfigInstance.lastServerAddress.equals(ServerName) == false) {
-            ContentSyncConfig.ConfigInstance.lastServerAddress = ServerName;
+        if (ContentSyncConfig.ConfigInstance.ClientSettings.lastServerAddress.equals(ServerName) == false) {
+            ContentSyncConfig.ConfigInstance.ClientSettings.lastServerAddress = ServerName;
             restartNeeded = true;
             ContentSyncConfig.SaveConfig();
         }
@@ -42,32 +38,42 @@ public class ContentSyncClient {
             entry.ServerName = ServerName;
 
             //LONG WAY TO SAY, if we dont have ANY entries matching that name
-            if (ContentSyncConfig.ConfigInstance.serverContentEntriesList.stream().anyMatch(x -> x.Name.toLowerCase().equals(entry.Name.toLowerCase())) == false) {
+            if (ContentSyncConfig.ConfigInstance.ServerPackSettings.serverContentEntriesList.stream().anyMatch(x -> x.Name.toLowerCase().equals(entry.Name.toLowerCase())) == false) {
                 //Add it
-                ContentSyncConfig.ConfigInstance.serverContentEntriesList.add(entry);
+                ContentSyncConfig.ConfigInstance.ServerPackSettings.serverContentEntriesList.add(entry);
                 restartNeeded = true;
 
-            } else if (ContentSyncConfig.ConfigInstance.serverContentEntriesList.stream().anyMatch(x -> x.Name.toLowerCase().equals(entry.Name.toLowerCase())) == true) {
+            } else if (ContentSyncConfig.ConfigInstance.ServerPackSettings.serverContentEntriesList.stream().anyMatch(x -> x.Name.toLowerCase().equals(entry.Name.toLowerCase())) == true) {
                 //Find it
-                Optional<ServerContentEntry> existing = ContentSyncConfig.ConfigInstance.serverContentEntriesList.stream().filter(x -> x.Name.toLowerCase().equals(entry.Name.toLowerCase())).findFirst();
+                Optional<ServerContentEntry> existing = ContentSyncConfig.ConfigInstance.ServerPackSettings.serverContentEntriesList.stream().filter(x -> x.Name.toLowerCase().equals(entry.Name.toLowerCase())).findFirst();
                 if (existing.isPresent()) {
                     //Ok. Get the index, access via list for safety and just update the URL
-                    ContentSyncConfig.ConfigInstance.serverContentEntriesList.get(ContentSyncConfig.ConfigInstance.serverContentEntriesList.indexOf(existing.get())).URL = entry.URL;
+                    ContentSyncConfig.ConfigInstance.ServerPackSettings.serverContentEntriesList.get(ContentSyncConfig.ConfigInstance.ServerPackSettings.serverContentEntriesList.indexOf(existing.get())).URL = entry.URL;
                 }
             }
         }
 
         ContentSyncConfig.SaveConfig();
-        TriggerScreen(restartNeeded);
+        TriggerScreen(restartNeeded, EnforceServerPacks);
     }
 
-    private static void TriggerScreen(boolean restartNeeded) {
-        boolean flag = true;
-        String string1 = "This server requires the use of custom ContentSync server resource packs.";
-        String string2 = "Rejecting the custom server resource packs will disconnect you from this server.";
+    private static void TriggerScreen(boolean restartNeeded, boolean EnforceServerPacks) {
+        TextComponent chatLine1 = new TextComponent("ContentSync has added or updated content packs.");
+        TextComponent chatLine2 = new TextComponent("The server staff will instruct you if a restart is required.");
+        TextComponent string1;
+        TextComponent string2;
+
+
+        if (!EnforceServerPacks) {
+            string1 = new TextComponent("This server recommends the use of custom ContentSync server resource packs.");
+            string2 = new TextComponent("Would you like to download and install these automatically?");
+        } else {
+            string1 = new TextComponent("This server requires the use of custom ContentSync server resource packs.");
+            string2 = new TextComponent("Rejecting the custom server resource packs will disconnect you from this server.");
+        }
 
         Minecraft.getInstance().execute(() -> {
-            Minecraft.getInstance().setScreen(new ConfirmScreen((accepted) -> {
+            Minecraft.getInstance().setScreen(new ConfirmScreen(accepted -> {
                 Minecraft.getInstance().setScreen((Screen)null);
                 if (accepted) {
                     //Do the update
@@ -89,24 +95,23 @@ public class ContentSyncClient {
                         //Ok! Time to tell the client
                         LocalPlayer player = Minecraft.getInstance().player;
 
-                        player.sendMessage(new TextComponent("ContentSync has added or updated content packs."), Util.NIL_UUID);
-                        player.sendMessage(new TextComponent("The server staff will instruct you if a restart is required."), Util.NIL_UUID);
+                        player.sendMessage(chatLine1, Util.NIL_UUID);
+                        player.sendMessage(chatLine2, Util.NIL_UUID);
 
                     }
                     Minecraft.getInstance().reloadResourcePacks();
 
                 } else {
-                    //Go away
-                    Minecraft.getInstance().getConnection().getConnection().disconnect(new TranslatableComponent("multiplayer.requiredTexturePrompt.disconnect"));
+                    if (EnforceServerPacks) {
+                        //Go away
+                        Minecraft.getInstance().getConnection().getConnection().disconnect(new TranslatableComponent("multiplayer.requiredTexturePrompt.disconnect"));
+                    }
                 }
 
-                //flag ? new TranslatableComponent("multiplayer.requiredTexturePrompt.line1") : new TranslatableComponent("multiplayer.texturePrompt.line1")
-                //((Component)(flag ? (new TranslatableComponent("multiplayer.requiredTexturePrompt.line2")).withStyle(new ChatFormatting[]{ChatFormatting.YELLOW, ChatFormatting.BOLD}) : new TranslatableComponent("multiplayer.texturePrompt.line2")))
-
-            }, new TextComponent(string1) ,
-                    ((Component)((new TextComponent(string2)).withStyle(new ChatFormatting[]{ChatFormatting.YELLOW, ChatFormatting.BOLD}) )),
-                    flag ? CommonComponents.GUI_PROCEED : CommonComponents.GUI_YES,
-                    (Component)(flag ? new TranslatableComponent("menu.disconnect") : CommonComponents.GUI_NO)));
+            }, string1,
+                    EnforceServerPacks ? (Component) string2.withStyle(new ChatFormatting[]{ChatFormatting.YELLOW, ChatFormatting.BOLD}) : (Component) string2,
+                    EnforceServerPacks ? CommonComponents.GUI_PROCEED : CommonComponents.GUI_YES,
+                    (Component)(EnforceServerPacks ? new TranslatableComponent("menu.disconnect") : CommonComponents.GUI_NO)));
         });
     }
 }

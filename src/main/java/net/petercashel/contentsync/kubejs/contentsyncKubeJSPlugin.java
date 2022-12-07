@@ -20,7 +20,7 @@ public class contentsyncKubeJSPlugin extends KubeJSPlugin {
         Dist dist = FMLEnvironment.dist;
         Logger logger = LogManager.getLogger("contentsync");
 
-        if (CSconfig.IsConfigured) {
+        if (CSconfig.CommonSettings.IsConfigured) {
             var runner = new ConstructEventWorker(logger, dist);
             runner.run(); //Start now
         }
