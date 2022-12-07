@@ -25,7 +25,7 @@ public abstract class ContentEntry implements IPackEntry {
 
     @Expose
     @SerializedName("name")
-    public String Name = "example_entry";
+    public String Name = "";
     @SerializedName("displayName")
     @Expose
     public String displayName;
