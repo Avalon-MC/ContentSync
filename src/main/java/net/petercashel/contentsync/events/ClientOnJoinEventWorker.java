@@ -18,7 +18,6 @@ public class ClientOnJoinEventWorker extends BaseContentSyncWorker {
         super(logger, dist, new IngameEMS());
 
         DoGlobalPacks = false;
-        StartupSleepTime = 10000;
     }
 
 
