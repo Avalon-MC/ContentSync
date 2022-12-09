@@ -3,6 +3,9 @@ package net.petercashel.contentsync.configuration;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.annotations.Expose;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.fml.DistExecutor;
+import net.minecraftforge.fml.loading.FMLEnvironment;
 import net.petercashel.contentsync.configuration.base.IPackEntry;
 import net.petercashel.contentsync.configuration.modpack.ModpackContentEntry;
 import net.petercashel.contentsync.configuration.server.ServerContentEntry;
@@ -20,7 +23,7 @@ public class ContentSyncConfig {
 
 
     @Expose
-    public int ConfigVersion = 3;
+    public int ConfigVersion = 2;
 
     @Expose
     public CommonSettings CommonSettings = new CommonSettings();
@@ -206,13 +209,18 @@ public class ContentSyncConfig {
             CSconfig.CommonPackSettings.contentEntriesList.add(new ModpackContentEntry()); //Default
             CSconfig.ServerPackSettings.serverContentEntriesList.add(new ServerContentEntry()); //Default
             cfgFile.getParentFile().mkdirs();
+            CSconfig.ConfigVersion = 3;
         }
-        CSconfig.Migrate();
         return CSconfig;
     }
 
     public static ContentSyncConfig LoadConfig() {
         ConfigInstance = LoadConfig(cfgFile, ConfigInstance);
+
+        if (ConfigInstance.ConfigVersion < 3) {
+            ConfigInstance.ConfigVersion = 3;
+            ConfigInstance.Migrate(); //Migrate for 3+;
+        }
 
         if (ConfigInstance.ServerPackSettings.serverContentEntriesList == null) {
             ConfigInstance.ServerPackSettings.serverContentEntriesList = new ArrayList<>();
@@ -221,8 +229,23 @@ public class ContentSyncConfig {
             ConfigInstance.CommonPackSettings.contentEntriesList = new ArrayList<>();
         }
 
+        if (ConfigInstance.HostingServerSettings.ThisServerAddress == null) {
+            ConfigInstance.HostingServerSettings.ThisServerAddress = "";
+        }
+
+        if (ConfigInstance.ClientSettings.lastServerAddress == null) {
+            ConfigInstance.ClientSettings.lastServerAddress = "";
+        }
+
         if (!ConfigInstance.ServerPackSettings.serverContentEntriesList.isEmpty() || !ConfigInstance.CommonPackSettings.contentEntriesList.isEmpty()) {
             ConfigInstance.CommonSettings.IsConfigured = true;
+        }
+
+        //Finally
+        if (FMLEnvironment.dist == Dist.DEDICATED_SERVER) {
+            //Enforce proper DS settings
+            ConfigInstance.CommonSettings.DisableUI = true;
+            ConfigInstance.CommonSettings.HideMenuButton = true;
         }
 
         return ConfigInstance;

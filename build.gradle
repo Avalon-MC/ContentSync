@@ -202,6 +202,9 @@ configurations {
     implementation.extendsFrom shadow
 }
 
+// Shadowing Test Sources and Dependencies
+import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
+
 dependencies {
     // Specify the version of Minecraft to use. If this is any group other than 'net.minecraft', it is assumed
     // that the dep is a ForgeGradle 'patcher' dependency, and its patches will be applied.
@@ -259,6 +262,7 @@ jar {
     }
 }
 
+
 shadowJar {
     project.configurations.shadow.setTransitive(true);
     configurations = [project.configurations.shadow]
@@ -297,8 +301,6 @@ processResources {
     }
 }
 
-// Shadowing Test Sources and Dependencies
-import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 
 task deobfJar(type: ShadowJar) {
     from sourceSets.main.output

@@ -54,7 +54,9 @@ public class ContentSyncClient {
         }
 
         ContentSyncConfig.SaveConfig();
-        TriggerScreen(restartNeeded, EnforceServerPacks);
+        if (restartNeeded) {
+            TriggerScreen(restartNeeded, EnforceServerPacks);
+        }
     }
 
     private static void TriggerScreen(boolean restartNeeded, boolean EnforceServerPacks) {
