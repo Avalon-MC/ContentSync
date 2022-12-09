@@ -1,7 +1,6 @@
 
 # ContentSync - [MIT Licence](https://github.com/Avalon-MC/ContentSync/blob/main/LICENSE)
 > A Forge 1.18.2 mod. Requires OpenLoader and KubeJS. Created by Peter Cashel (pacas00) and contributers.
->> PLEASE NOTE: ContentSync is in Alpha and is being actively developed and tested.
 
 ### What is this
 
@@ -32,7 +31,7 @@ server_scripts  - holds files that will go into kubejs/server_scripts/<name>
 startup_scripts - holds files that will go into kubejs/startup_scripts/<name>
 ```
 
-### Config Example
+### Config Example - TODO: NEEDS UPDATING - New format as of 1.2.0, all still relevent
 
 The configuration consists of two booleans, and an array of contentEntries (in `contentEntriesList`)
 
