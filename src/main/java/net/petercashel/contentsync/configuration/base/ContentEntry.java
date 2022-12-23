@@ -137,6 +137,13 @@ public abstract class ContentEntry implements IPackEntry {
         }
 
         UpdateAvailable = needsUpdate; //Make sure these are in sync
+
+        if (!UpdateAvailable) {
+            //Process these here so we can handle enables and holidays
+            UpdateEnabledStatus(ContentSyncConfig.ConfigInstance.ClientSettings.lastServerAddress);
+            UpdatePackMetaExtension();
+        }
+
         return needsUpdate;
     }
 

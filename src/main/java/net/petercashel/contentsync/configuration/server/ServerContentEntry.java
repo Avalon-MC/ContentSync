@@ -11,6 +11,8 @@ import net.petercashel.contentsync.data_formats.packrepo.PackTypeEnum;
 import java.io.File;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 public class ServerContentEntry extends ContentEntry {
@@ -24,6 +26,10 @@ public class ServerContentEntry extends ContentEntry {
     public boolean Enabled = false;
 
     @Expose
+    @SerializedName("restriction")
+    public ServerPackRestrictionEnum Restriction = ServerPackRestrictionEnum.None;
+
+    @Expose
     @SerializedName("serverOnly")
     public boolean ServerOnly = false;
 
@@ -33,7 +39,7 @@ public class ServerContentEntry extends ContentEntry {
 
     @Override
     public void UpdateEnabledStatus(String LastServerName) {
-        Enabled = ServerName.equals(LastServerName);
+        Enabled = ServerName.equals(LastServerName) && isNotRestricted();
     }
 
     @Override
@@ -64,6 +70,78 @@ public class ServerContentEntry extends ContentEntry {
                 }
             }
         }
+    }
+
+
+    public boolean isNotRestricted() {
+        switch (this.Restriction) {
+            case None, NoneEnd -> {
+                return true;
+            }
+            case Easter -> {
+                return CheckDate(getEasterSundayDate(), 2, 1);
+            }
+            case Halloween -> {
+                return CheckDate(getHalloweenDate(), 3, 0);
+            }
+            case Christmas -> {
+                return CheckDate(getChristmasDate(), 5, 5);
+            }
+        }
+
+        return true;
+    }
+    private boolean CheckDate(Calendar eventDate, int daysBefore, int daysAfter) {
+
+        Calendar rangeStart = eventDate;
+        Calendar rangeEnd = (Calendar) eventDate.clone();
+
+        rangeStart.add(Calendar.DATE, 0 - daysBefore);
+
+        rangeEnd.add(Calendar.DATE, daysAfter);
+
+        Calendar today = Calendar.getInstance();
+
+        return !today.before(rangeStart) && !today.after(rangeEnd);
+    }
+
+    public static Calendar getHalloweenDate()
+    {
+        int year = Calendar.getInstance().getTime().getYear();
+        Calendar res = Calendar.getInstance();
+        res.set(year, 10, 31);
+        return res;
+    }
+
+    public static Calendar getChristmasDate()
+    {
+        int year = Calendar.getInstance().getTime().getYear();
+        Calendar res = Calendar.getInstance();
+        res.set(year, 12, 25);
+        return res;
+    }
+
+    public static Calendar getEasterSundayDate()
+    {
+        int year = Calendar.getInstance().getTime().getYear();
+
+        int a = year % 19,
+                b = year / 100,
+                c = year % 100,
+                d = b / 4,
+                e = b % 4,
+                g = (8 * b + 13) / 25,
+                h = (19 * a + b - d - g + 15) % 30,
+                j = c / 4,
+                k = c % 4,
+                m = (a + 11 * h) / 319,
+                r = (2 * e + 2 * j - k - h + m + 32) % 7,
+                n = (h - m + r + 90) / 25,
+                p = (h - m + r + n + 19) % 32;
+
+        Calendar res = Calendar.getInstance();
+        res.set(year, n, p);
+        return res;
     }
 
 
