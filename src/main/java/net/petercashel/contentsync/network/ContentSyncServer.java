@@ -27,7 +27,10 @@ public class ContentSyncServer {
         }
 
         //Send list to packet, but none of the server only ones.
-        List<ServerContentEntry> list = ContentSyncConfig.ConfigInstance.ServerPackSettings.serverContentEntriesList.stream().filter(x -> x.ServerOnly == false).toList();
+        List<ServerContentEntry> list = ContentSyncConfig.ConfigInstance.ServerPackSettings.serverContentEntriesList.stream().filter(x -> x.ServerOnly == false && x.ServerName.equals(ContentSyncConfig.ConfigInstance.HostingServerSettings.ThisServerAddress)).toList();
+
+        if (list.size() == 0) return;
+
         ContentSyncServerPackPacket_SC packet = new ContentSyncServerPackPacket_SC(list);
 
         //Send Packet

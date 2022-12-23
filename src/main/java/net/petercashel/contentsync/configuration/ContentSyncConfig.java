@@ -4,7 +4,6 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.annotations.Expose;
 import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.loading.FMLEnvironment;
 import net.petercashel.contentsync.configuration.base.IPackEntry;
 import net.petercashel.contentsync.configuration.modpack.ModpackContentEntry;
@@ -60,7 +59,18 @@ public class ContentSyncConfig {
         public String ThisServerAddress = "";
         @Expose
         public boolean EnforceServerPacks = true;
+        @Expose
+        public GistAPISettings gistAPISettings = new GistAPISettings();
 
+    }
+
+    public static class GistAPISettings {
+        @Expose
+        public String CurrentGistCode = "";
+        @Expose
+        public String PersonalAccessToken = "";
+        @Expose
+        public String Optional_User_ID_Or_Org_Name = "";
     }
 
     @Expose
@@ -198,6 +208,10 @@ public class ContentSyncConfig {
                         CSconfig.ClientSettings = ClientSettings;
                     }
 
+                    if (CSconfig.HostingServerSettings.gistAPISettings == null) {
+                        CSconfig.HostingServerSettings.gistAPISettings = new GistAPISettings();
+                    }
+
                 } catch (Exception ex) {
                     ex.printStackTrace();
                 }
@@ -235,6 +249,10 @@ public class ContentSyncConfig {
 
         if (ConfigInstance.ClientSettings.lastServerAddress == null) {
             ConfigInstance.ClientSettings.lastServerAddress = "";
+        }
+
+        if (ConfigInstance.HostingServerSettings.gistAPISettings == null) {
+            ConfigInstance.HostingServerSettings.gistAPISettings = new GistAPISettings();
         }
 
         if (!ConfigInstance.ServerPackSettings.serverContentEntriesList.isEmpty() || !ConfigInstance.CommonPackSettings.contentEntriesList.isEmpty()) {

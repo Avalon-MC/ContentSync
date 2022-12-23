@@ -6,6 +6,7 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
+import net.minecraftforge.event.server.ServerStartedEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.InterModComms;
 import net.minecraftforge.fml.common.Mod;
@@ -16,6 +17,7 @@ import net.minecraftforge.event.server.ServerStartingEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.network.NetworkEvent;
 import net.petercashel.contentsync.configuration.ContentSyncConfig;
+import net.petercashel.contentsync.gist.gistManager;
 import net.petercashel.contentsync.network.ContentSyncServer;
 import net.petercashel.contentsync.network.PacketHandler;
 import org.slf4j.Logger;
@@ -71,6 +73,16 @@ public class ContentSync
         //LOGGER.info("HELLO from server starting");
     }
 
+    @SubscribeEvent
+    public void onServerStarted(ServerStartedEvent event)
+    {
+        // Do something when the server starts
+        LOGGER.info("HELLO from server started");
+        LOGGER.info("ContentSync ShareCode Status: " + gistManager.OnServerStarted(event).toString());
+        LOGGER.info("ContentSync ShareCode: " + ContentSyncConfig.ConfigInstance.HostingServerSettings.gistAPISettings.CurrentGistCode);
+
+    }
+
     // You can use EventBusSubscriber to automatically subscribe events on the contained class (this is subscribing to the MOD
     // Event bus for receiving Registry Events)
     @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.MOD)
@@ -89,6 +101,11 @@ public class ContentSync
     {
         @SubscribeEvent
         public static void onPlayerJoined (final PlayerEvent.PlayerLoggedInEvent loggedInEvent) {
+
+            if (loggedInEvent.getPlayer().isLocalPlayer()) {
+                return; //DONT FIRE FOR SP PLAYER
+
+            }
 
             //HERE WE GO!
             ContentSyncServer.OnPlayerJoined(loggedInEvent);

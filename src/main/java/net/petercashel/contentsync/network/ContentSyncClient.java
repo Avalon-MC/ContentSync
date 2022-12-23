@@ -18,13 +18,39 @@ import net.petercashel.contentsync.configuration.server.ServerContentEntry;
 import net.petercashel.contentsync.events.ClientOnJoinEventWorker;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.kohsuke.github.GHGist;
+import org.kohsuke.github.GitHub;
 
 import java.util.List;
 import java.util.Optional;
 
 public class ContentSyncClient {
 
-    public static void Process(List<ServerContentEntry> serverContentEntriesList, String ServerName, Boolean EnforceServerPacks) {
+    public static boolean ProcessShareCode(String shareCode) {
+
+        if (shareCode == null || shareCode.isBlank() || shareCode.isBlank()) {
+            return false;
+        }
+
+        try {
+            GitHub ghClient = GitHub.connectAnonymously();
+            GHGist gist = ghClient.getGist(shareCode);
+
+            boolean EnforceServerPacks = Boolean.parseBoolean(gist.getFile("EnforceServerPacks.txt").getContent());
+            List<ServerContentEntry> serverPacks = ServerContentEntry.GetListFromShareCodeContent(gist.getFile("sharecode.txt").getContent());
+            String ServerName = gist.getFile("ServerName.txt").getContent();
+
+            return Process(serverPacks, ServerName, EnforceServerPacks, true);
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        return false;
+    }
+
+
+
+    public static boolean Process(List<ServerContentEntry> serverContentEntriesList, String ServerName, Boolean EnforceServerPacks, Boolean SkipPopup) {
         //Handle Ingest to configs
         boolean restartNeeded = false;
 
@@ -54,9 +80,11 @@ public class ContentSyncClient {
         }
 
         ContentSyncConfig.SaveConfig();
-        if (restartNeeded) {
+        if (restartNeeded && !SkipPopup) {
             TriggerScreen(restartNeeded, EnforceServerPacks);
         }
+
+        return restartNeeded;
     }
 
     private static void TriggerScreen(boolean restartNeeded, boolean EnforceServerPacks) {

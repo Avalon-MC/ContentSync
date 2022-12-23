@@ -12,6 +12,7 @@ import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraftforge.forgespi.language.IModInfo;
 import net.petercashel.contentsync.configuration.ContentSyncConfig;
 import net.petercashel.contentsync.configuration.base.IPackEntry;
+import net.petercashel.contentsync.network.ContentSyncClient;
 
 import java.util.List;
 import java.util.function.Consumer;
@@ -24,7 +25,7 @@ public class ScreenContentSyncClient extends Screen {
     private Screen parentScreen;
     private PackListWidget packList;
     private PackListWidget.PackListEntry selected;
-    private Button doneButton, updateButton;
+    private Button doneButton, updateButton, shareButton;
     private List<IPackEntry> packEntries;
     private boolean shouldReload;
 
@@ -45,18 +46,20 @@ public class ScreenContentSyncClient extends Screen {
         int panelWidth = screenWidth;
         int centerX = screenWidth / 2;
 
-        int doneButtonWidth = 200;
+        int doneButtonWidth = 150;
         int buttonY = this.height - 20 - PADDING;
         int fullButtonHeight = PADDING + 20 + PADDING;
 
 
-        doneButton = new Button(centerX + ((PADDING / 2)), buttonY, doneButtonWidth, 20, new TranslatableComponent("gui.done"), b -> ScreenContentSyncClient.this.onClose());
-        updateButton = new Button(centerX - (doneButtonWidth + (PADDING / 2)), buttonY, doneButtonWidth, 20, new TextComponent("Check for Pack Updates"), b -> this.minecraft.setScreen(new ScreenContentSyncUpdate(this)));
+        doneButton = new Button(centerX + ((PADDING)) + (doneButtonWidth / 4), buttonY, doneButtonWidth, 20, new TranslatableComponent("gui.done"), b -> ScreenContentSyncClient.this.onClose());
+        updateButton = new Button(centerX - (doneButtonWidth + (PADDING) + (doneButtonWidth / 4)), buttonY, doneButtonWidth, 20, new TextComponent("Check for Pack Updates"), b -> this.minecraft.setScreen(new ScreenContentSyncUpdate(this)));
+        shareButton = new Button(centerX - (doneButtonWidth / 4), buttonY, doneButtonWidth / 2, 20, new TextComponent("ShareCode"), b -> this.minecraft.setScreen(new ScreenContentSyncShareCode(this)));
         packList = new PackListWidget(this, panelWidth, fullButtonHeight,buttonY - (PADDING * 1));
 
 
         this.addRenderableWidget(doneButton);
         this.addRenderableWidget(updateButton);
+        this.addRenderableWidget(shareButton);
         this.addRenderableWidget(packList);
 
     }
@@ -79,6 +82,7 @@ public class ScreenContentSyncClient extends Screen {
         super.render(pPoseStack, pMouseX, pMouseY, pPartialTick);
         doneButton.render(pPoseStack, pMouseX, pMouseY, pPartialTick);
         updateButton.render(pPoseStack, pMouseX, pMouseY, pPartialTick);
+        shareButton.render(pPoseStack, pMouseX, pMouseY, pPartialTick);
 
         pPoseStack.pushPose();
         pPoseStack.scale(1.5f,1.5f,1.5f);

@@ -61,7 +61,7 @@ public class ContentSyncServerPackPacket_SC {
                     serverContentEntriesList.add(ServerContentEntry.deserialise(itemTag));
                 }
 
-                ContentSyncClient.Process(serverContentEntriesList, ServerName, EnforceServerPacks);
+                ContentSyncClient.Process(serverContentEntriesList, ServerName, EnforceServerPacks, false);
 
             } catch (Exception ex) {
                 //Fail

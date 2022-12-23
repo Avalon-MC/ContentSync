@@ -2,11 +2,16 @@ package net.petercashel.contentsync.configuration.server;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
+import com.google.gson.reflect.TypeToken;
 import net.minecraft.nbt.CompoundTag;
+import net.petercashel.contentsync.configuration.ContentSyncConfig;
 import net.petercashel.contentsync.configuration.base.ContentEntry;
 import net.petercashel.contentsync.data_formats.packrepo.PackTypeEnum;
 
 import java.io.File;
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ServerContentEntry extends ContentEntry {
 
@@ -79,6 +84,24 @@ public class ServerContentEntry extends ContentEntry {
 
         return entry;
     }
+
+    public static String GetShareCodeContent() {
+        List<ServerContentEntry> list = ContentSyncConfig.ConfigInstance.ServerPackSettings.serverContentEntriesList.stream().filter(x -> x.ServerOnly == false).toList();
+        list = ContentSyncConfig.ConfigInstance.ServerPackSettings.serverContentEntriesList.stream().filter(x -> x.ServerOnly == false && x.ServerName.equals(ContentSyncConfig.ConfigInstance.HostingServerSettings.ThisServerAddress)).toList();
+        String json = ContentSyncConfig.gson.toJson(list);
+        return json;
+    }
+
+    private static  <T> List<T> getList(String jsonArray, Class<T> clazz) {
+        Type typeOfT = TypeToken.getParameterized(List.class, clazz).getType();
+        return ContentSyncConfig.gson.fromJson(jsonArray, typeOfT);
+    }
+
+    public static List<ServerContentEntry> GetListFromShareCodeContent(String content) {
+        return getList(content, ServerContentEntry.class);
+    }
+
+
 
     @Override
     public boolean IsServerPack() {
