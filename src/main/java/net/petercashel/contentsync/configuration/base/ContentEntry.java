@@ -136,6 +136,10 @@ public abstract class ContentEntry implements IPackEntry {
             return false;
         }
 
+        if (ContentSyncConfig.ConfigInstance.CommonSettings.ModpackDeveloperMode) {
+            needsUpdate = false; //We dont care in dev mode.
+        }
+
         UpdateAvailable = needsUpdate; //Make sure these are in sync
 
         if (!UpdateAvailable) {

@@ -33,6 +33,8 @@ public class ContentSyncConfig {
         public boolean HideMenuButton = false;
         @Expose
         public boolean DisableUI = false;
+        @Expose
+        public boolean ModpackDeveloperMode = false;
     }
 
     @Expose
