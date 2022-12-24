@@ -94,7 +94,8 @@ public class ServerContentEntry extends ContentEntry {
     private boolean CheckDate(Calendar eventDate, int daysBefore, int daysAfter) {
 
         Calendar rangeStart = eventDate;
-        Calendar rangeEnd = (Calendar) eventDate.clone();
+        Calendar rangeEnd = Calendar.getInstance();
+        rangeEnd.setTime(rangeStart.getTime());
 
         rangeStart.add(Calendar.DATE, 0 - daysBefore);
 
@@ -102,28 +103,34 @@ public class ServerContentEntry extends ContentEntry {
 
         Calendar today = Calendar.getInstance();
 
-        return !today.before(rangeStart) && !today.after(rangeEnd);
+        return !today.getTime().before(rangeStart.getTime()) && !today.getTime().after(rangeEnd.getTime());
     }
 
     public static Calendar getHalloweenDate()
     {
-        int year = Calendar.getInstance().getTime().getYear();
+        int year = Calendar.getInstance().get(Calendar.YEAR);
         Calendar res = Calendar.getInstance();
-        res.set(year, 10, 31);
+        res.set(Calendar.YEAR, year);
+        res.set(Calendar.MONTH, Calendar.OCTOBER);
+        res.set(Calendar.DAY_OF_MONTH, 31);
+        res.set(Calendar.YEAR, year);
         return res;
     }
 
     public static Calendar getChristmasDate()
     {
-        int year = Calendar.getInstance().getTime().getYear();
+        int year = Calendar.getInstance().get(Calendar.YEAR);
         Calendar res = Calendar.getInstance();
-        res.set(year, 12, 25);
+        res.set(Calendar.YEAR, year);
+        res.set(Calendar.MONTH, Calendar.DECEMBER);
+        res.set(Calendar.DAY_OF_MONTH, 25);
+        res.set(Calendar.YEAR, year);
         return res;
     }
 
     public static Calendar getEasterSundayDate()
     {
-        int year = Calendar.getInstance().getTime().getYear();
+        int year = Calendar.getInstance().get(Calendar.YEAR);
 
         int a = year % 19,
                 b = year / 100,
@@ -140,7 +147,10 @@ public class ServerContentEntry extends ContentEntry {
                 p = (h - m + r + n + 19) % 32;
 
         Calendar res = Calendar.getInstance();
-        res.set(year, n, p);
+        res.set(Calendar.YEAR, year);
+        res.set(Calendar.MONTH, n - 1); //fucking bs
+        res.set(Calendar.DAY_OF_MONTH, p);
+        res.set(Calendar.YEAR, year);
         return res;
     }
 

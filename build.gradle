@@ -249,8 +249,9 @@ shadowJar {
     configurations = [project.configurations.shadow]
     relocate('com.vdurmont.semver4j', 'net.petercashel.shaded.com.vdurmont.semver4j')
     relocate('com.fasterxml', 'net.petercashel.shaded.com.fasterxml')
-    relocate('org.apache', 'net.petercashel.shaded.org.apache')
     relocate('org.kohsuke', 'net.petercashel.shaded.org.kohsuke')
+    relocate('org.apache.commons.io', 'net.petercashel.shaded.org.apache.commons.io')
+    relocate('org.apache.commons.lang3', 'net.petercashel.shaded.org.apache.commons.lang3')
     finalizedBy 'reobfShadowJar'
 }
 
