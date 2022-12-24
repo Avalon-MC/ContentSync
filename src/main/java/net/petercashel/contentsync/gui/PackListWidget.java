@@ -1,14 +1,17 @@
 package net.petercashel.contentsync.gui;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiComponent;
 import net.minecraft.client.gui.components.ObjectSelectionList;
+import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.locale.Language;
 import net.minecraft.network.chat.*;
 import net.petercashel.contentsync.configuration.base.IPackEntry;
+import net.petercashel.contentsync.configuration.server.ServerContentEntry;
+import net.petercashel.contentsync.configuration.server.ServerPackRestrictionEnum;
 
 public class PackListWidget extends ObjectSelectionList<PackListWidget.PackListEntry> {
 
@@ -83,17 +86,35 @@ public class PackListWidget extends ObjectSelectionList<PackListWidget.PackListE
         @Override
         public void render(PoseStack pPoseStack, int pIndex, int pTop, int pLeft, int pWidth, int pHeight, int pMouseX, int pMouseY, boolean pIsMouseOver, float pPartialTick) {
             Component name = new TextComponent(stripControlCodes(packEntry.GetDisplayName()));
-            MutableComponent version = new TextComponent("Installed Version: " + stripControlCodes(packEntry.GetInstalledVersion()));
+            MutableComponent version = new TextComponent("Installed Version:");
+            if (packEntry.GetInstalledVersion().length() > 1 && !packEntry.GetInstalledVersion().isBlank()) {
+                version.append(" " + stripControlCodes(packEntry.GetInstalledVersion()));
+            } else {
+                version.append(" §80.0.0");
+            }
 
-            if (packEntry.GetTargetVersion().length() > 1) {
-                version.append(" (T:" + stripControlCodes(packEntry.GetTargetVersion()) + ")");
+            if (packEntry.GetTargetVersion().length() > 1 && !packEntry.GetTargetVersion().isBlank()) {
+                version.append(" §7(T:" + stripControlCodes(packEntry.GetTargetVersion()) + ")");
+            }
+
+            if (packEntry.IsServerPack() && !CanToggle()) {
+                version.append(" §7(" + (GetRestrictionType(packEntry)) + ")");
             }
 
             String PackType = packEntry.IsServerPack()? "Server Pack" : "Content Pack";
+            if (packEntry.IsServerPack() && !CanToggle()) {
+                //PackType = "Seasonal Pack";
+            }
+
             Component packTypeComp = new TextComponent("Type: ");
             Component packTypeCompValue = new TextComponent(PackType);
 
-            String Enabled = packEntry.IsServerPack() == false ? "Always Enabled" : (packEntry.IsEnabled() ? "Enabled" : "Disabled");
+            String Enabled = packEntry.IsServerPack() == false ? "§6Always Enabled" : (packEntry.IsEnabled() ? "§6Enabled" : "§4Disabled");
+
+            if (packEntry.IsServerPack() && !CanToggle()) {
+                Enabled = (packEntry.IsEnabled() ? "§6Enabled" : "§4Disabled");
+            }
+
             Component enabledComp = new TextComponent("State: ");
             Component enabledCompValue = new TextComponent(Enabled);
 
@@ -116,10 +137,14 @@ public class PackListWidget extends ObjectSelectionList<PackListWidget.PackListE
                 if (!packEntry.IsServerPack()) {
                     textComponent.append("Content Packs cannot be disabled");
                 } else {
-                    if (packEntry.IsEnabled()) {
-                        textComponent.append("Server Packs can be disabled by double clicking.");
+                    if (CanToggle()) {
+                        if (packEntry.IsEnabled()) {
+                            textComponent.append("Server Packs can be disabled by double clicking.");
+                        } else {
+                            textComponent.append("Server Packs can be enabled by double clicking.");
+                        }
                     } else {
-                        textComponent.append("Server Packs can be enabled by double clicking.");
+                        textComponent.append("Seasonal Packs cannot be manually enabled or disabled.");
                     }
                 }
 
@@ -129,6 +154,23 @@ public class PackListWidget extends ObjectSelectionList<PackListWidget.PackListE
 
             }
 
+        }
+
+        private String GetRestrictionType(IPackEntry packEntry) {
+            ServerContentEntry entry = (ServerContentEntry) packEntry;
+            return entry.Restriction.name();
+        }
+
+        public boolean CanToggle() {
+            if (packEntry.IsServerPack() == false) {
+                return false;
+            }
+            ServerContentEntry entry = (ServerContentEntry) packEntry;
+            if (entry.Restriction == ServerPackRestrictionEnum.None) {
+                return true;
+            }
+
+            return false;
         }
     }
 

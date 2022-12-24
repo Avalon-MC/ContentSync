@@ -111,10 +111,12 @@ public class ScreenContentSyncClient extends Screen {
 
         boolean didAction = false;
         
-        if (this.selected == entry) {
-            //Toggle
-            ContentSyncConfig.ConfigInstance.ToggleEntry(entry.getInfo());
-            didAction = true;
+        if (entry.CanToggle()) {
+            if (this.selected == entry) {
+                //Toggle
+                ContentSyncConfig.ConfigInstance.ToggleEntry(entry.getInfo());
+                didAction = true;
+            }
         }
 
         this.selected = entry == this.selected ? null : entry;
