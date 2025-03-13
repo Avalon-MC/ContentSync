@@ -4,6 +4,8 @@ public enum ServerPackRestrictionEnum {
     None,
     Easter,
     Halloween,
+    CheeseDay,
+    ThanksGiving,
     Christmas,
 
 

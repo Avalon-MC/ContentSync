@@ -84,6 +84,12 @@ public class ServerContentEntry extends ContentEntry {
             case Halloween -> {
                 return CheckDate(getHalloweenDate(), 3, 0);
             }
+            case CheeseDay -> {
+                return CheckDate(getDate(11, Calendar.NOVEMBER), 1, 1);
+            }
+            case ThanksGiving -> {
+                return CheckDate(LastThursdayOfNovember(), 3, 3);
+            }
             case Christmas -> {
                 return CheckDate(getChristmasDate(), 5, 5);
             }
@@ -92,18 +98,27 @@ public class ServerContentEntry extends ContentEntry {
         return true;
     }
     private boolean CheckDate(Calendar eventDate, int daysBefore, int daysAfter) {
-
         Calendar rangeStart = eventDate;
         Calendar rangeEnd = Calendar.getInstance();
         rangeEnd.setTime(rangeStart.getTime());
 
         rangeStart.add(Calendar.DATE, 0 - daysBefore);
-
         rangeEnd.add(Calendar.DATE, daysAfter);
 
         Calendar today = Calendar.getInstance();
 
         return !today.getTime().before(rangeStart.getTime()) && !today.getTime().after(rangeEnd.getTime());
+    }
+
+    public static Calendar getDate(int day, int month) {
+        int year = Calendar.getInstance().get(Calendar.YEAR);
+
+        Calendar res = Calendar.getInstance();
+        res.set(Calendar.YEAR, year);
+        res.set(Calendar.MONTH, month);
+        res.set(Calendar.DAY_OF_MONTH, 1);
+
+        return res;
     }
 
     public static Calendar getHalloweenDate()
@@ -125,6 +140,50 @@ public class ServerContentEntry extends ContentEntry {
         res.set(Calendar.MONTH, Calendar.DECEMBER);
         res.set(Calendar.DAY_OF_MONTH, 25);
         res.set(Calendar.YEAR, year);
+        return res;
+    }
+
+    public static Calendar LastThursdayOfNovember() {
+        return LastDayOfMonth(Calendar.THURSDAY, Calendar.NOVEMBER, 0);
+    }
+
+    private static Calendar FirstDayOfMonth(int day, int month, int i) {
+        int year = Calendar.getInstance().get(Calendar.YEAR);
+
+        Calendar res = Calendar.getInstance();
+        res.set(Calendar.YEAR, year);
+        res.set(Calendar.MONTH, month);
+        res.set(Calendar.DAY_OF_MONTH, 1);
+
+        while (res.get(Calendar.DAY_OF_WEEK) != day) {
+            res.add(Calendar.DAY_OF_MONTH, 1);
+        }
+
+        if (i != 0) {
+            res.add(Calendar.WEEK_OF_YEAR, i);
+        }
+
+        return res;
+    }
+
+    private static Calendar LastDayOfMonth(int day, int month, int i) {
+        int year = Calendar.getInstance().get(Calendar.YEAR);
+
+        Calendar res = Calendar.getInstance();
+        res.set(Calendar.YEAR, year);
+        res.set(Calendar.MONTH, month);
+        res.set(Calendar.DAY_OF_MONTH, 1);
+        res.add(Calendar.MONTH, 1);
+        res.add(Calendar.DAY_OF_MONTH, -1);
+
+        while (res.get(Calendar.DAY_OF_WEEK) != day) {
+            res.add(Calendar.DAY_OF_MONTH, -1);
+        }
+
+        if (i != 0) {
+            res.add(Calendar.WEEK_OF_YEAR, i);
+        }
+
         return res;
     }
 
