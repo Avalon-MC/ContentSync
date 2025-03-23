@@ -1,0 +1,59 @@
+name: Build 1.21.1
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - '1.21.1'
+
+jobs:
+  build:
+    runs-on: self-hosted
+    steps:
+    
+      - name: 'Cleanup build folder'
+        run: |
+          ls -la ./
+          rm -rf ./* || true
+          rm -rf ./.??* || true
+          ls -la ./
+        
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+
+      - name: Setup JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Set env MCMOD_VERSION
+        run: echo "MCMOD_VERSION=$(cat gradle.properties | grep "mod_version" | cut -d'=' -f2)" >> $GITHUB_ENV
+        
+      - name: Set env MCMOD_ID
+        run: echo "MCMOD_ID=$(cat gradle.properties | grep "mod_id" | cut -d'=' -f2)" >> $GITHUB_ENV
+        
+      - name: Set env MCMOD_NAME
+        run: echo "MCMOD_NAME=$(cat gradle.properties | grep "mod_name" | cut -d'=' -f2)" >> $GITHUB_ENV
+
+      - name: chmod +x ./gradlew
+        run: chmod +x ./gradlew
+        
+      - name: Build with Gradle
+        run: ./gradlew build
+        
+      - name: Upload binaries to release
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: build/libs/${{ env.MCMOD_ID }}-${{ env.MCMOD_VERSION }}.jar
+          tag: ${{ github.ref }}
+          overwrite: true
+          file_glob: true
+          body: "Automated Build for ${{ env.MCMOD_NAME }} ${{ env.MCMOD_VERSION }}"
