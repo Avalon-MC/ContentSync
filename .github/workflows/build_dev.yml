@@ -30,7 +30,7 @@ jobs:
         run: chmod +x ./updateenv.sh
         
       - name: Load Env Variables from gradle.properties
-        run: ./updateenv.sh
+        run: . updateenv.sh
         
       - name: Dump Env for futher work
         run: printenv
