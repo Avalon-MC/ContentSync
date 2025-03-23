@@ -45,6 +45,11 @@ public class ContentSync
         NeoForge.EVENT_BUS.register(this);
         NeoForge.EVENT_BUS.register(ForgeRegistryEvents.class);
 
+        if (dist.isClient()) {
+            NeoForge.EVENT_BUS.register(ContentSyncClientEvents.class);
+        }
+        NeoForge.EVENT_BUS.register(ContentSyncEvents.class);
+
 
         bus.register(RegistryEvents.class);
     }

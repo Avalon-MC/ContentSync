@@ -3,13 +3,13 @@ package net.petercashel.contentsync.gui;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.ObjectSelectionList;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraftforge.forgespi.language.IModInfo;
 import net.petercashel.contentsync.configuration.ContentSyncConfig;
 import net.petercashel.contentsync.configuration.base.IPackEntry;
 import net.petercashel.contentsync.network.ContentSyncClient;
@@ -75,8 +75,8 @@ public class ScreenContentSyncClient extends Screen {
     }
 
     @Override
-    public void render(PoseStack pPoseStack, int pMouseX, int pMouseY, float pPartialTick) {
-        renderDirtBackground(0);
+    public void render(GuiGraphics pPoseStack, int pMouseX, int pMouseY, float pPartialTick) {
+        this.renderBackground(pPoseStack, pMouseX, pMouseY, pPartialTick);
 
         packList.render(pPoseStack, pMouseX, pMouseY, pPartialTick);
         super.render(pPoseStack, pMouseX, pMouseY, pPartialTick);

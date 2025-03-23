@@ -3,14 +3,15 @@ package net.petercashel.contentsync;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.TitleScreen;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.petercashel.contentsync.configuration.ContentSyncConfig;
 import net.petercashel.contentsync.gui.ScreenContentSyncClient;
 
-import java.awt.*;
 
-@Mod.EventBusSubscriber(modid = "contentsync", bus = Mod.EventBusSubscriber.Bus.FORGE, value = Dist.CLIENT)
+
 public class ContentSyncClientEvents {
 
     @SubscribeEvent

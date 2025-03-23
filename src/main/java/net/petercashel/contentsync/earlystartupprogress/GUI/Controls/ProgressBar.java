@@ -79,7 +79,7 @@ public class ProgressBar implements IUIRenderable{
         }
     }
 
-    public void render(PoseStack pPoseStack, Screen instance) {
+    public void render(GuiGraphics pPoseStack, Screen instance) {
 
         fill(pPoseStack, x,y,x+width, y+height, backColor.pack());
 
@@ -99,9 +99,8 @@ public class ProgressBar implements IUIRenderable{
 
     }
 
-    private void fill(PoseStack pPoseStack, float x1, float y1, float v, float v1, int pack) {
-        GuiComponent.fill(pPoseStack, (int)x1,(int)y1,(int)v, (int)v1, pack);
-        net.minecraft.client.gui.GuiGraphics.fill(pPoseStack, (int)x1,(int)y1,(int)v, (int)v1, pack, pack);
+    private void fill(GuiGraphics pPoseStack, float x1, float y1, float v, float v1, int pack) {
+        fill(pPoseStack, (int)x1,(int)y1,(int)v, (int)v1, pack);
     }
 
     public int GetHeight() {
