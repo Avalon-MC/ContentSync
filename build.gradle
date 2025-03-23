@@ -2,7 +2,8 @@ plugins {
     id 'java-library'
     id 'maven-publish'
     id 'net.neoforged.gradle.userdev' version '7.0.183'
-    id("com.github.johnrengelman.shadow") version "8.1.1"
+    //id("com.github.johnrengelman.shadow") version "8.1.1"
+    id 'com.gradleup.shadow' version '8.3.0' // https://github.com/GradleUp/shadow/pull/876
 }
 
 dependencies {
@@ -16,6 +17,12 @@ tasks.named('wrapper', Wrapper).configure {
     // file size for Gradle. If you do switch this to ALL, run the Gradle wrapper task twice afterwards.
     // (Verify by checking gradle/wrapper/gradle-wrapper.properties to see if distributionUrl now points to `-all`)
     distributionType = Wrapper.DistributionType.BIN
+}
+
+configurations {
+    shadowCommon
+    implementation.extendsFrom shadowCommon
+    runtimeClasspath.extendsFrom shadowCommon
 }
 
 version = mod_version
@@ -146,6 +153,10 @@ configurations {
     runtimeClasspath.extendsFrom localRuntime
 }
 
+artifacts {
+    shadowJar
+}
+
 
 // Shadowing Test Sources and Dependencies
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
@@ -199,8 +210,8 @@ dependencies {
     localRuntime("net.darkhax.openloader:openloader-neoforge-${minecraft_version}:${openloader_min_version}")
 
 
-    implementation shadow ( 'com.vdurmont:semver4j:3.1.0')
-    implementation shadow ( 'org.kohsuke:github-api:1.313')
+    shadowCommon( 'com.vdurmont:semver4j:3.1.0')
+    shadowCommon( 'org.kohsuke:github-api:1.313')
 }
 
 // This block of code expands all declared replace properties in the specified resource targets.
@@ -231,6 +242,18 @@ tasks.withType(ProcessResources).configureEach {
     }
 }
 
+shadowJar {
+    from(tasks.jarJar.archiveFile)
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    relocate('com.vdurmont.semver4j', 'net.petercashel.shaded.com.vdurmont.semver4j')
+    relocate('com.fasterxml', 'net.petercashel.shaded.com.fasterxml')
+    relocate('org.kohsuke', 'net.petercashel.shaded.org.kohsuke')
+    relocate('org.apache.commons.io', 'net.petercashel.shaded.org.apache.commons.io')
+    relocate('org.apache.commons.lang3', 'net.petercashel.shaded.org.apache.commons.lang3')
+    configurations = [project.configurations.shadowCommon]
+    archiveClassifier.set('')
+}
+
 // Example configuration to allow publishing using the maven-publish plugin
 publishing {
     publications {
@@ -256,3 +279,6 @@ idea {
         downloadJavadoc = true
     }
 }
+
+
+tasks.build.dependsOn shadowJar

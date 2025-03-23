@@ -100,7 +100,7 @@ public class ProgressBar implements IUIRenderable{
     }
 
     private void fill(GuiGraphics pPoseStack, float x1, float y1, float v, float v1, int pack) {
-        fill(pPoseStack, (int)x1,(int)y1,(int)v, (int)v1, pack);
+        pPoseStack.fill((int)x1,(int)y1,(int)v, (int)v1, pack);
     }
 
     public int GetHeight() {

@@ -1,6 +1,9 @@
 name: Build
 
-on: [push, pull_request]
+on:
+  push:
+    branches:
+      - '1.21.1'
 
 jobs:
   build:
@@ -23,3 +26,13 @@ jobs:
 
       - name: Build with Gradle
         run: ./gradlew build
+
+      - name: Upload binaries to release
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: build/libs/contentsync-2.*
+          tag: ${{ github.ref }}
+          overwrite: true
+          file_glob: true
+          body: "Automated Build"
