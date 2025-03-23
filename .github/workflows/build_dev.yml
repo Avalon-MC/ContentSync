@@ -26,20 +26,18 @@ jobs:
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
 
-      - name: chmod +x ./updateenv.sh
-        run: chmod +x ./updateenv.sh
+      - name: Set env MCMOD_VERSION
+        run: echo "MCMOD_VERSION=$(cat gradle.properties | grep "mod_version" | cut -d'=' -f2)" >> $GITHUB_ENV
         
-      - name: Load Env Variables from gradle.properties
-        run: . updateenv.sh
+      - name: Set env MCMOD_ID
+        run: echo "MCMOD_ID=$(cat gradle.properties | grep "mod_id" | cut -d'=' -f2)" >> $GITHUB_ENV
         
-      - name: Dump Env for futher work
-        run: printenv
+      - name: Print Mod Info
+        run: echo $MCMOD_ID
+        run: echo $MCMOD_VERSION
 
       - name: chmod +x ./gradlew
         run: chmod +x ./gradlew
         
       - name: Build with Gradle
         run: ./gradlew build
-
-      - name: chmod +x ./updateenv.sh
-        run: chmod +x ./updateenv.sh
