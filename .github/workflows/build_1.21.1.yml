@@ -1,6 +1,7 @@
 name: Build 1.21.1
 
 on:
+  workflow_dispatch:
   push:
     branches:
       - '1.21.1'
