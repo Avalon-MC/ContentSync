@@ -32,8 +32,9 @@ jobs:
       - name: Set env MCMOD_ID
         run: echo "MCMOD_ID=$(cat gradle.properties | grep "mod_id" | cut -d'=' -f2)" >> $GITHUB_ENV
         
-      - name: Print Mod Info
+      - name: Print Mod Id
         run: echo $MCMOD_ID
+      - name: Print Mod Version
         run: echo $MCMOD_VERSION
 
       - name: chmod +x ./gradlew
