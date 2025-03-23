@@ -4,7 +4,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.loading.FMLEnvironment;
@@ -34,7 +34,7 @@ public class ScreenContentSyncUpdate extends Screen implements IEarlyMessageSyst
     private boolean CloseNextFrame;
 
     public ScreenContentSyncUpdate(Screen parentScreen) {
-        super(new TextComponent(""));
+        super(Component.literal(""));
         this.parentScreen = parentScreen;
     }
 
@@ -44,7 +44,7 @@ public class ScreenContentSyncUpdate extends Screen implements IEarlyMessageSyst
     }
 
     private static final int PADDING = 6;
-    private static TextComponent contentSync = new TextComponent("ContentSync Pack Update!");
+    private static MutableComponent contentSync = Component.literal("ContentSync Pack Update!");
     private static Color ContentSyncRed = new Color(145, 29, 32);
     private static Color ContentSyncRedDark = new Color(107, 21, 24);
     private static Color ContentSyncRedDarker = new Color(66, 13, 15);
@@ -206,17 +206,17 @@ public class ScreenContentSyncUpdate extends Screen implements IEarlyMessageSyst
             PrimaryProgressBar.render(pPoseStack, this);
             pPoseStack.popPose();
 
-            TextComponent text = new TextComponent(LastStage);
+            MutableComponent text = Component.literal(LastStage);
 
             pPoseStack.pushPose();
             pPoseStack.scale(1.5f, 1.5f, 1.5f);
 
             getFontRenderer().draw(pPoseStack, text, width / 3 - (Minecraft.getInstance().font.width(text.getVisualOrderText()) / 2), ((height / 3) - font.lineHeight * 2) - (PrimaryProgressBar.GetHeight() / 3), 0xFFFFFF);
-            text = new TextComponent(LastMessage);
+            text = Component.literal(LastMessage);
 
             getFontRenderer().draw(pPoseStack, text, width / 3 - (Minecraft.getInstance().font.width(text.getVisualOrderText()) / 2), ((height / 3) + PrimaryProgressBar.GetHeight() / 3 + font.lineHeight * 1), 0xFFFFFF);
 
-            text = new TextComponent(LastMessage2);
+            text = Component.literal(LastMessage2);
             getFontRenderer().draw(pPoseStack, text, width / 3 - (Minecraft.getInstance().font.width(text.getVisualOrderText()) / 2), ((height / 3) + PrimaryProgressBar.GetHeight() / 3 + font.lineHeight * 2), 0xFFFFFF);
 
             pPoseStack.popPose();

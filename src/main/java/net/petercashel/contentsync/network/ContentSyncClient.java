@@ -8,11 +8,10 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.fml.ModLoadingContext;
-import net.minecraftforge.fml.loading.FMLEnvironment;
+import net.minecraft.network.chat.MutableComponent;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.fml.ModLoadingContext;
+import net.neoforged.fml.loading.FMLEnvironment;
 import net.petercashel.contentsync.configuration.ContentSyncConfig;
 import net.petercashel.contentsync.configuration.server.ServerContentEntry;
 import net.petercashel.contentsync.events.ClientOnJoinEventWorker;
@@ -88,18 +87,18 @@ public class ContentSyncClient {
     }
 
     private static void TriggerScreen(boolean restartNeeded, boolean EnforceServerPacks) {
-        TextComponent chatLine1 = new TextComponent("ContentSync has added or updated content packs.");
-        TextComponent chatLine2 = new TextComponent("The server staff will instruct you if a restart is required.");
-        TextComponent string1;
-        TextComponent string2;
+        MutableComponent chatLine1 = Component.literal("ContentSync has added or updated content packs.");
+        MutableComponent chatLine2 = Component.literal("The server staff will instruct you if a restart is required.");
+        MutableComponent string1;
+        MutableComponent string2;
 
 
         if (!EnforceServerPacks) {
-            string1 = new TextComponent("This server recommends the use of custom ContentSync server resource packs.");
-            string2 = new TextComponent("Would you like to download and install these automatically?");
+            string1 = Component.literal("This server recommends the use of custom ContentSync server resource packs.");
+            string2 = Component.literal("Would you like to download and install these automatically?");
         } else {
-            string1 = new TextComponent("This server requires the use of custom ContentSync server resource packs.");
-            string2 = new TextComponent("Rejecting the custom server resource packs will disconnect you from this server.");
+            string1 = Component.literal("This server requires the use of custom ContentSync server resource packs.");
+            string2 = Component.literal("Rejecting the custom server resource packs will disconnect you from this server.");
         }
 
         Minecraft.getInstance().execute(() -> {
@@ -125,8 +124,8 @@ public class ContentSyncClient {
                         //Ok! Time to tell the client
                         LocalPlayer player = Minecraft.getInstance().player;
 
-                        player.sendMessage(chatLine1, Util.NIL_UUID);
-                        player.sendMessage(chatLine2, Util.NIL_UUID);
+                        player.sendSystemMessage(chatLine1);
+                        player.sendSystemMessage(chatLine2);
 
                     }
                     Minecraft.getInstance().reloadResourcePacks();
@@ -134,14 +133,14 @@ public class ContentSyncClient {
                 } else {
                     if (EnforceServerPacks) {
                         //Go away
-                        Minecraft.getInstance().getConnection().getConnection().disconnect(new TranslatableComponent("multiplayer.requiredTexturePrompt.disconnect"));
+                        Minecraft.getInstance().getConnection().getConnection().disconnect(Component.translatable("multiplayer.requiredTexturePrompt.disconnect"));
                     }
                 }
 
             }, string1,
                     EnforceServerPacks ? (Component) string2.withStyle(new ChatFormatting[]{ChatFormatting.YELLOW, ChatFormatting.BOLD}) : (Component) string2,
                     EnforceServerPacks ? CommonComponents.GUI_PROCEED : CommonComponents.GUI_YES,
-                    (Component)(EnforceServerPacks ? new TranslatableComponent("menu.disconnect") : CommonComponents.GUI_NO)));
+                    (Component)(EnforceServerPacks ? Component.translatable("menu.disconnect") : CommonComponents.GUI_NO)));
         });
     }
 }

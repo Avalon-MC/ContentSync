@@ -1,6 +1,6 @@
 package net.petercashel.contentsync.events;
 
-import net.minecraftforge.api.distmarker.Dist;
+import net.neoforged.api.distmarker.Dist;
 import net.petercashel.contentsync.earlystartupprogress.IEarlyMessageSystem;
 import net.petercashel.contentsync.earlystartupprogress.IngameEMS;
 import org.apache.logging.log4j.Logger;

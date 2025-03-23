@@ -1,0 +1,45 @@
+modLoader = "javafml"
+loaderVersion = "[${loader_version_range},)"
+license = "${mod_license}"
+
+[[mods]]
+modId = "${mod_id}"
+version = "${mod_version}"
+displayName = "${mod_name}"
+credits = "${mod_credits}"
+authors = "${mod_authors}"
+description = '''${mod_description}'''
+
+# The [[mixins]] block allows you to declare your mixin config to FML so that it gets loaded.
+[[mixins]]
+config="${mod_id}.mixins.json"
+
+
+[[dependencies.${mod_id}]]
+modId="neoforge" #mandatory
+type="required" #mandatory
+versionRange="${neo_version_range}" #mandatory
+ordering="NONE"
+side="BOTH"
+
+[[dependencies.${mod_id}]]
+modId="minecraft"
+type="required"
+# This version range declares a minimum of the current minecraft version up to but not including the next major version
+versionRange="${minecraft_version_range}"
+ordering="NONE"
+side="BOTH"
+
+[[dependencies.dingusprimeacm]]
+modId = "kubejs"
+mandatory = true
+versionRange = "[${kubejs_version},)"
+ordering = "BEFORE"
+side = "BOTH"
+
+[[dependencies.dingusprimeacm]]
+modId = "openloader"
+mandatory = true
+versionRange = "[${openloader_min_version},)"
+ordering = "NONE"
+side = "BOTH"

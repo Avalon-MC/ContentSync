@@ -7,8 +7,8 @@ import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.ObjectSelectionList;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraftforge.forgespi.language.IModInfo;
 import net.petercashel.contentsync.configuration.ContentSyncConfig;
 import net.petercashel.contentsync.configuration.base.IPackEntry;
@@ -21,7 +21,7 @@ import java.util.function.Function;
 public class ScreenContentSyncClient extends Screen {
 
     private static final int PADDING = 6;
-    private static TextComponent contentSync = new TextComponent("ContentSync Packs");
+    private static MutableComponent contentSync = Component.literal("ContentSync Packs");
     private Screen parentScreen;
     private PackListWidget packList;
     private PackListWidget.PackListEntry selected;
@@ -31,7 +31,7 @@ public class ScreenContentSyncClient extends Screen {
 
 
     public ScreenContentSyncClient(Screen parentScreen) {
-        super(new TextComponent("ContentSync"));
+        super(Component.literal("ContentSync"));
         this.parentScreen = parentScreen;
         packEntries = ContentSyncConfig.ConfigInstance.GetAllPackEntries();
     }
@@ -51,9 +51,9 @@ public class ScreenContentSyncClient extends Screen {
         int fullButtonHeight = PADDING + 20 + PADDING;
 
 
-        doneButton = new Button(centerX + ((PADDING)) + (doneButtonWidth / 4), buttonY, doneButtonWidth, 20, new TranslatableComponent("gui.done"), b -> ScreenContentSyncClient.this.onClose());
-        updateButton = new Button(centerX - (doneButtonWidth + (PADDING) + (doneButtonWidth / 4)), buttonY, doneButtonWidth, 20, new TextComponent("Check for Pack Updates"), b -> this.minecraft.setScreen(new ScreenContentSyncUpdate(this)));
-        shareButton = new Button(centerX - (doneButtonWidth / 4), buttonY, doneButtonWidth / 2, 20, new TextComponent("ShareCode"), b -> this.minecraft.setScreen(new ScreenContentSyncShareCode(this)));
+        doneButton = new Button(centerX + ((PADDING)) + (doneButtonWidth / 4), buttonY, doneButtonWidth, 20, Component.translatable("gui.done"), b -> ScreenContentSyncClient.this.onClose());
+        updateButton = new Button(centerX - (doneButtonWidth + (PADDING) + (doneButtonWidth / 4)), buttonY, doneButtonWidth, 20, Component.literal("Check for Pack Updates"), b -> this.minecraft.setScreen(new ScreenContentSyncUpdate(this)));
+        shareButton = new Button(centerX - (doneButtonWidth / 4), buttonY, doneButtonWidth / 2, 20, Component.literal("ShareCode"), b -> this.minecraft.setScreen(new ScreenContentSyncShareCode(this)));
         packList = new PackListWidget(this, panelWidth, fullButtonHeight,buttonY - (PADDING * 1));
 
 

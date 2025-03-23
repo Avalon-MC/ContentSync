@@ -1,6 +1,6 @@
 package net.petercashel.contentsync.earlystartupprogress;
 
-import net.minecraftforge.api.distmarker.Dist;
+import net.neoforged.api.distmarker.Dist;
 import org.apache.logging.log4j.Logger;
 
 public class ServerEMS implements IEarlyMessageSystem{

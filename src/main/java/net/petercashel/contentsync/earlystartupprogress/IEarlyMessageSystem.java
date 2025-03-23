@@ -1,6 +1,6 @@
 package net.petercashel.contentsync.earlystartupprogress;
 
-import net.minecraftforge.api.distmarker.Dist;
+import net.neoforged.api.distmarker.Dist;
 import net.petercashel.contentsync.configuration.ContentSyncConfig;
 import org.apache.logging.log4j.Logger;
 

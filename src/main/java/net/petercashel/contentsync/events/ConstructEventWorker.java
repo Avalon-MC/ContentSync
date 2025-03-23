@@ -1,6 +1,6 @@
 package net.petercashel.contentsync.events;
 
-import net.minecraftforge.api.distmarker.Dist;
+import net.neoforged.api.distmarker.Dist;
 import net.petercashel.contentsync.configuration.ContentSyncConfig;
 import net.petercashel.contentsync.earlystartupprogress.ClientEMS;
 import net.petercashel.contentsync.earlystartupprogress.IEarlyMessageSystem;
@@ -13,6 +13,7 @@ public class ConstructEventWorker extends BaseContentSyncWorker {
     public ConstructEventWorker(Logger logger, Dist dist) {
         super(logger, dist, getEMS(dist));
     }
+
 
     private static IEarlyMessageSystem getEMS(Dist dist) {
         if (dist == Dist.CLIENT) {

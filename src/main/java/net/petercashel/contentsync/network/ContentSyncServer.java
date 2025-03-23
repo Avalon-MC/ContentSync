@@ -1,7 +1,7 @@
 package net.petercashel.contentsync.network;
 
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraftforge.event.entity.player.PlayerEvent;
+import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.petercashel.contentsync.configuration.ContentSyncConfig;
 import net.petercashel.contentsync.configuration.server.ServerContentEntry;
 
@@ -12,7 +12,7 @@ public class ContentSyncServer {
     public static void OnPlayerJoined(PlayerEvent.PlayerLoggedInEvent loggedInEvent) {
 
         //Kick off!
-        if (loggedInEvent.getPlayer().level.isClientSide) {
+        if (loggedInEvent.getEntity().level().isClientSide) {
             return; //Go away client side
         }
 
@@ -34,7 +34,7 @@ public class ContentSyncServer {
         ContentSyncServerPackPacket_SC packet = new ContentSyncServerPackPacket_SC(list);
 
         //Send Packet
-        PacketHandler.sendToPlayer(packet, (ServerPlayer) loggedInEvent.getPlayer()); //YEET
+        PacketHandler.sendToPlayer(packet, (ServerPlayer) loggedInEvent.getEntity()); //YEET
 
     }
 }

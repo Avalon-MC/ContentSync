@@ -1,6 +1,6 @@
 package net.petercashel.contentsync.gist;
 
-import net.minecraftforge.event.server.ServerStartedEvent;
+import net.neoforged.neoforge.event.server.ServerStartedEvent;
 import net.petercashel.contentsync.configuration.ContentSyncConfig;
 import net.petercashel.contentsync.configuration.server.ServerContentEntry;
 import org.kohsuke.github.GHGist;

@@ -61,7 +61,7 @@ public class PackListWidget extends ObjectSelectionList<PackListWidget.PackListE
 
         @Override
         public Component getNarration() {
-            return new TranslatableComponent("narrator.select", packEntry.GetDisplayName());
+            return Component.translatable("narrator.select", packEntry.GetDisplayName());
         }
 
         @Override
@@ -85,8 +85,8 @@ public class PackListWidget extends ObjectSelectionList<PackListWidget.PackListE
 
         @Override
         public void render(PoseStack pPoseStack, int pIndex, int pTop, int pLeft, int pWidth, int pHeight, int pMouseX, int pMouseY, boolean pIsMouseOver, float pPartialTick) {
-            Component name = new TextComponent(stripControlCodes(packEntry.GetDisplayName()));
-            MutableComponent version = new TextComponent("Installed Version:");
+            Component name = Component.literal(stripControlCodes(packEntry.GetDisplayName()));
+            MutableComponent version = Component.literal("Installed Version:");
             if (packEntry.GetInstalledVersion().length() > 1 && !packEntry.GetInstalledVersion().isBlank()) {
                 version.append(" " + stripControlCodes(packEntry.GetInstalledVersion()));
             } else {
@@ -106,8 +106,8 @@ public class PackListWidget extends ObjectSelectionList<PackListWidget.PackListE
                 //PackType = "Seasonal Pack";
             }
 
-            Component packTypeComp = new TextComponent("Type: ");
-            Component packTypeCompValue = new TextComponent(PackType);
+            Component packTypeComp = Component.literal("Type: ");
+            Component packTypeCompValue = Component.literal(PackType);
 
             String Enabled = packEntry.IsServerPack() == false ? "§6Always Enabled" : (packEntry.IsEnabled() ? "§6Enabled" : "§4Disabled");
 
@@ -115,8 +115,8 @@ public class PackListWidget extends ObjectSelectionList<PackListWidget.PackListE
                 Enabled = (packEntry.IsEnabled() ? "§6Enabled" : "§4Disabled");
             }
 
-            Component enabledComp = new TextComponent("State: ");
-            Component enabledCompValue = new TextComponent(Enabled);
+            Component enabledComp = Component.literal("State: ");
+            Component enabledCompValue = Component.literal(Enabled);
 
             Font font = this.parent.getFontRenderer();
             int valueOffset = font.width("State: ");
@@ -132,25 +132,25 @@ public class PackListWidget extends ObjectSelectionList<PackListWidget.PackListE
 
             if (isMouseOver(pMouseX, pMouseY) && parent.IsSelected(this)) {
 
-                MutableComponent textComponent = new TextComponent("");
+                MutableComponent MutableComponent = Component.literal("");
 
                 if (!packEntry.IsServerPack()) {
-                    textComponent.append("Content Packs cannot be disabled");
+                    MutableComponent.append("Content Packs cannot be disabled");
                 } else {
                     if (CanToggle()) {
                         if (packEntry.IsEnabled()) {
-                            textComponent.append("Server Packs can be disabled by double clicking.");
+                            MutableComponent.append("Server Packs can be disabled by double clicking.");
                         } else {
-                            textComponent.append("Server Packs can be enabled by double clicking.");
+                            MutableComponent.append("Server Packs can be enabled by double clicking.");
                         }
                     } else {
-                        textComponent.append("Seasonal Packs cannot be manually enabled or disabled.");
+                        MutableComponent.append("Seasonal Packs cannot be manually enabled or disabled.");
                     }
                 }
 
 
                 //ToolTip
-                Minecraft.getInstance().screen.renderTooltip(pPoseStack, textComponent, pMouseX, pMouseY);
+                Minecraft.getInstance().screen.renderTooltip(pPoseStack, MutableComponent, pMouseX, pMouseY);
 
             }
 

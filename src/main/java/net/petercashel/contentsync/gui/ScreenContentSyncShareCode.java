@@ -7,22 +7,22 @@ import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.MutableComponent;
 import net.petercashel.contentsync.network.ContentSyncClient;
+
 
 public class ScreenContentSyncShareCode extends Screen {
 
     private static final int PADDING = 6;
-    private static TextComponent contentSync = new TextComponent("ContentSync ShareCode");
-    private static TextComponent contentSyncLabel = new TextComponent("Enter ShareCode");
+    private static MutableComponent contentSync = Component.literal("ContentSync ShareCode");
+    private static MutableComponent contentSyncLabel = Component.literal("Enter ShareCode");
     private Screen parentScreen;
     private boolean shouldReload;
     private Button doneButton, addButton;
     private EditBox shareCodeBox;
 
     public ScreenContentSyncShareCode(Screen parentScreen) {
-        super(new TextComponent("ContentSync"));
+        super(Component.literal("ContentSync"));
         this.parentScreen = parentScreen;
     }
 
@@ -40,10 +40,10 @@ public class ScreenContentSyncShareCode extends Screen {
         int editBoxWidth = 300;
         int editBoxHeight = 20;
 
-        shareCodeBox = new EditBox(this.font, centerX - (editBoxWidth / 2), centerY - (editBoxHeight / 2), editBoxWidth, editBoxHeight, new TextComponent("Some Text"));
+        shareCodeBox = new EditBox(this.font, centerX - (editBoxWidth / 2), centerY - (editBoxHeight / 2), editBoxWidth, editBoxHeight, Component.literal("Some Text"));
 
-        doneButton = new Button(centerX + ((PADDING)) + (doneButtonWidth / 4), buttonY, doneButtonWidth, 20, new TranslatableComponent("gui.cancel"), b -> ScreenContentSyncShareCode.this.onClose());
-        addButton = new Button(centerX - (doneButtonWidth + (PADDING) + (doneButtonWidth / 4)), buttonY, doneButtonWidth, 20, new TextComponent("Add Packs"), b -> ScreenContentSyncShareCode.this.AddPacks());
+        doneButton = new Button(centerX + ((PADDING)) + (doneButtonWidth / 4), buttonY, doneButtonWidth, 20, Component.translatable("gui.cancel"), b -> ScreenContentSyncShareCode.this.onClose());
+        addButton = new Button(centerX - (doneButtonWidth + (PADDING) + (doneButtonWidth / 4)), buttonY, doneButtonWidth, 20, Component.literal("Add Packs"), b -> ScreenContentSyncShareCode.this.AddPacks());
 
         this.addRenderableWidget(shareCodeBox);
         this.addRenderableWidget(doneButton);

@@ -3,14 +3,12 @@ package net.petercashel.contentsync;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.TitleScreen;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.client.event.ScreenEvent;
-import net.minecraftforge.client.event.ScreenOpenEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.bus.api.SubscribeEvent;
 import net.petercashel.contentsync.configuration.ContentSyncConfig;
 import net.petercashel.contentsync.gui.ScreenContentSyncClient;
+
+import java.awt.*;
 
 @Mod.EventBusSubscriber(modid = "contentsync", bus = Mod.EventBusSubscriber.Bus.FORGE, value = Dist.CLIENT)
 public class ContentSyncClientEvents {
@@ -30,9 +28,9 @@ public class ContentSyncClientEvents {
 
 
     private static Button mainButton = null;
-    private static TextComponent contentSync = new TextComponent("ContentSync");
-    private static TextComponent contentSyncShort = new TextComponent("CS");
-    private static TextComponent contentSyncToolTip = new TextComponent("Opens the ContentSync screen");
+    private static MutableComponent contentSync = Component.literal("ContentSync");
+    private static MutableComponent contentSyncShort = Component.literal("CS");
+    private static MutableComponent contentSyncToolTip = Component.literal("Opens the ContentSync screen");
 
     @SubscribeEvent
     public static void onInitScreenEvent (ScreenEvent.InitScreenEvent.Post event) {

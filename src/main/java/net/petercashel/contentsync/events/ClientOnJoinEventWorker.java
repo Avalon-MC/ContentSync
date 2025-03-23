@@ -1,6 +1,6 @@
 package net.petercashel.contentsync.events;
 
-import net.minecraftforge.api.distmarker.Dist;
+import net.neoforged.api.distmarker.Dist;
 import net.petercashel.contentsync.configuration.ContentSyncConfig;
 import net.petercashel.contentsync.configuration.modpack.ModpackContentEntry;
 import net.petercashel.contentsync.configuration.server.ServerContentEntry;

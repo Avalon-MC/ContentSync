@@ -1,6 +1,6 @@
 package net.petercashel.contentsync.earlystartupprogress;
 
-import net.minecraftforge.api.distmarker.Dist;
+import net.neoforged.api.distmarker.Dist;
 import net.petercashel.contentsync.earlystartupprogress.GUI.ClientProgressWindow;
 import net.petercashel.contentsync.earlystartupprogress.GUI.Controls.ProgressBar;
 import net.petercashel.contentsync.earlystartupprogress.GUI.Controls.TextLabel;
