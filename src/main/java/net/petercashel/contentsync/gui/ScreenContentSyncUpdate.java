@@ -2,12 +2,13 @@ package net.petercashel.contentsync.gui;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.fml.ModLoadingContext;
-import net.minecraftforge.fml.loading.FMLEnvironment;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.fml.ModLoadingContext;
+import net.neoforged.fml.loading.FMLEnvironment;
 import net.petercashel.contentsync.earlystartupprogress.GUI.Controls.IUIRenderable;
 import net.petercashel.contentsync.earlystartupprogress.GUI.Controls.ProgressBar;
 import net.petercashel.contentsync.earlystartupprogress.GUI.Controls.TextLabel;
@@ -137,12 +138,12 @@ public class ScreenContentSyncUpdate extends Screen implements IEarlyMessageSyst
     }
 
     @Override
-    public void render(PoseStack pPoseStack, int pMouseX, int pMouseY, float pPartialTick) {
+    public void render(GuiGraphics pPoseStack, int pMouseX, int pMouseY, float pPartialTick) {
         if (CloseNextFrame) {
             this.onClose();
             return;
         }
-        renderDirtBackground(0);
+        //renderDirtBackground(0);
 
         //Do Render
 
@@ -159,9 +160,9 @@ public class ScreenContentSyncUpdate extends Screen implements IEarlyMessageSyst
             }
         }
 
-        pPoseStack.pushPose();
+        pPoseStack.pose().pushPose();
         renderUI(pPoseStack);
-        pPoseStack.popPose();
+        pPoseStack.pose().popPose();
     }
 
 
@@ -174,25 +175,27 @@ public class ScreenContentSyncUpdate extends Screen implements IEarlyMessageSyst
         return font;
     }
 
-    private void renderUI(PoseStack pPoseStack) {
+    private void renderUI(GuiGraphics pPoseStack) {
 
         //MAKE IT CONTENT SYNC RED
 
-        fill(pPoseStack, 0,0, width, height, ContentSyncRedDark.pack());
+        pPoseStack.fill(0,0, width, height, ContentSyncRedDark.pack());
 
         int buttonY = this.height - 20 - PADDING;
         int fullButtonHeight = PADDING + 20 + PADDING;
 
-        fill(pPoseStack, 0,fullButtonHeight, width, buttonY - (PADDING * 1), ContentSyncRedDarker.pack());
+        pPoseStack.fill( 0,fullButtonHeight, width, buttonY - (PADDING * 1), ContentSyncRedDarker.pack());
 
 
 
         {
-            pPoseStack.pushPose();
-            pPoseStack.scale(1.5f,1.5f,1.5f);
-            getFontRenderer().draw(pPoseStack, contentSync.getVisualOrderText(), width / 3 - (Minecraft.getInstance().font.width(contentSync.getVisualOrderText()) / 2), ((int)PADDING * 1.2f), 0xFFFFFF);
+            pPoseStack.pose().pushPose();
+            pPoseStack.pose().scale(1.5f,1.5f,1.5f);
+            //etFontRenderer().draw(contentSync.getVisualOrderText(), width / 3 - (Minecraft.getInstance().font.width(contentSync.getVisualOrderText()) / 2), ((int)PADDING * 1.2f), 0xFFFFFF);
 
-            pPoseStack.popPose();
+            pPoseStack.drawString(getFontRenderer(), contentSync.getVisualOrderText(), width / 3 - (Minecraft.getInstance().font.width(contentSync.getVisualOrderText()) / 2), (int) ((int)PADDING * 1.2f), 0xFFFFFF);
+
+            pPoseStack.pose().popPose();
 
         }
 
@@ -202,24 +205,24 @@ public class ScreenContentSyncUpdate extends Screen implements IEarlyMessageSyst
 //        this.MessageText2 = new TextLabel("", 24, 45 - (24 + 4), Color.WHITE).SetCemter(500);
 
         {
-            pPoseStack.pushPose();
+            pPoseStack.pose().pushPose();
             PrimaryProgressBar.render(pPoseStack, this);
-            pPoseStack.popPose();
+            pPoseStack.pose().popPose();
 
             MutableComponent text = Component.literal(LastStage);
 
-            pPoseStack.pushPose();
-            pPoseStack.scale(1.5f, 1.5f, 1.5f);
+            pPoseStack.pose().pushPose();
+            pPoseStack.pose().scale(1.5f, 1.5f, 1.5f);
 
-            getFontRenderer().draw(pPoseStack, text, width / 3 - (Minecraft.getInstance().font.width(text.getVisualOrderText()) / 2), ((height / 3) - font.lineHeight * 2) - (PrimaryProgressBar.GetHeight() / 3), 0xFFFFFF);
+            pPoseStack.drawString(getFontRenderer(), text, width / 3 - (Minecraft.getInstance().font.width(text.getVisualOrderText()) / 2), ((height / 3) - font.lineHeight * 2) - (PrimaryProgressBar.GetHeight() / 3), 0xFFFFFF);
             text = Component.literal(LastMessage);
 
-            getFontRenderer().draw(pPoseStack, text, width / 3 - (Minecraft.getInstance().font.width(text.getVisualOrderText()) / 2), ((height / 3) + PrimaryProgressBar.GetHeight() / 3 + font.lineHeight * 1), 0xFFFFFF);
+            pPoseStack.drawString(getFontRenderer(), text, width / 3 - (Minecraft.getInstance().font.width(text.getVisualOrderText()) / 2), ((height / 3) + PrimaryProgressBar.GetHeight() / 3 + font.lineHeight * 1), 0xFFFFFF);
 
             text = Component.literal(LastMessage2);
-            getFontRenderer().draw(pPoseStack, text, width / 3 - (Minecraft.getInstance().font.width(text.getVisualOrderText()) / 2), ((height / 3) + PrimaryProgressBar.GetHeight() / 3 + font.lineHeight * 2), 0xFFFFFF);
+            pPoseStack.drawString(getFontRenderer(), text, width / 3 - (Minecraft.getInstance().font.width(text.getVisualOrderText()) / 2), ((height / 3) + PrimaryProgressBar.GetHeight() / 3 + font.lineHeight * 2), 0xFFFFFF);
 
-            pPoseStack.popPose();
+            pPoseStack.pose().popPose();
         }
 
     }

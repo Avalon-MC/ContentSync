@@ -1,5 +1,5 @@
 modLoader = "javafml"
-loaderVersion = "[${loader_version_range},)"
+loaderVersion="${loader_version_range}" #mandatory
 license = "${mod_license}"
 
 [[mods]]
@@ -9,10 +9,6 @@ displayName = "${mod_name}"
 credits = "${mod_credits}"
 authors = "${mod_authors}"
 description = '''${mod_description}'''
-
-# The [[mixins]] block allows you to declare your mixin config to FML so that it gets loaded.
-[[mixins]]
-config="${mod_id}.mixins.json"
 
 
 [[dependencies.${mod_id}]]
@@ -30,14 +26,14 @@ versionRange="${minecraft_version_range}"
 ordering="NONE"
 side="BOTH"
 
-[[dependencies.dingusprimeacm]]
+[[dependencies.${mod_id}]]
 modId = "kubejs"
 mandatory = true
 versionRange = "[${kubejs_version},)"
 ordering = "BEFORE"
 side = "BOTH"
 
-[[dependencies.dingusprimeacm]]
+[[dependencies.${mod_id}]]
 modId = "openloader"
 mandatory = true
 versionRange = "[${openloader_min_version},)"

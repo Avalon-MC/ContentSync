@@ -24,7 +24,7 @@ public record ContentSyncServerPackPacket_SC(
         boolean enforceServerPacks
         ) implements CustomPacketPayload {
 
-    public static final CustomPacketPayload.Type<ContentSyncServerPackPacket_SC> TYPE = new CustomPacketPayload.Type<>(ResourceLocation.fromNamespaceAndPath(MODID, "ContentSyncServerPackPacket_SC"));
+    public static final CustomPacketPayload.Type<ContentSyncServerPackPacket_SC> TYPE = new CustomPacketPayload.Type<>(ResourceLocation.fromNamespaceAndPath(MODID, "cs_server_pack_packet_sc"));
 
     // Each pair of elements defines the stream codec of the element to encode/decode and the getter for the element to encode
     // 'name' will be encoded and decoded as a string

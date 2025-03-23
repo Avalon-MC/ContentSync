@@ -49,19 +49,13 @@ public class ContentSync
         NeoForge.EVENT_BUS.register(ForgeRegistryEvents.class);
 
 
-        NeoForge.EVENT_BUS.register(ContentSyncEvents.class);
 
 
+        bus.register(ContentSyncEvents.class);
         bus.register(RegistryEvents.class);
     }
 
-    @SubscribeEvent
-    public static void register(final RegisterPayloadHandlersEvent event) {
-        // Sets the current network version
-        final PayloadRegistrar registrar = event.registrar("1")
-                .executesOn(HandlerThread.NETWORK);
-        PacketHandler.RegisterNetwork(registrar);
-    }
+
 
     private void setup(final FMLCommonSetupEvent event)
     {
@@ -108,10 +102,20 @@ public class ContentSync
 //            // Register a new block here
 //            //LOGGER.info("HELLO from Register Block");
 //        }
+
+
+        @SubscribeEvent
+        public static void register(final RegisterPayloadHandlersEvent event) {
+            // Sets the current network version
+            final PayloadRegistrar registrar = event.registrar("1")
+                    .executesOn(HandlerThread.NETWORK);
+            PacketHandler.RegisterNetwork(registrar);
+        }
     }
 
     public static class ForgeRegistryEvents
     {
+
         @SubscribeEvent
         public static void onPlayerJoined (final PlayerEvent.PlayerLoggedInEvent loggedInEvent) {
 
