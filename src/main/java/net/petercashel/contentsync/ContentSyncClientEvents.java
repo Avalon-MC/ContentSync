@@ -7,11 +7,12 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
 import net.petercashel.contentsync.configuration.ContentSyncConfig;
 import net.petercashel.contentsync.gui.ScreenContentSyncClient;
 
 
-
+@EventBusSubscriber(modid = "contentsync", bus = EventBusSubscriber.Bus.GAME, value = Dist.CLIENT)
 public class ContentSyncClientEvents {
 
     @SubscribeEvent

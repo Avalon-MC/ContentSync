@@ -2,6 +2,7 @@ package net.petercashel.contentsync.network;
 
 import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
+import net.neoforged.neoforge.network.PacketDistributor;
 import net.petercashel.contentsync.configuration.ContentSyncConfig;
 import net.petercashel.contentsync.configuration.server.ServerContentEntry;
 
@@ -31,10 +32,12 @@ public class ContentSyncServer {
 
         if (list.size() == 0) return;
 
-        ContentSyncServerPackPacket_SC packet = new ContentSyncServerPackPacket_SC(list);
+        //Create Packet
+        ContentSyncServerPackPacket_SC packet = new ContentSyncServerPackPacket_SC(list, ContentSyncConfig.ConfigInstance.HostingServerSettings.ThisServerAddress, ContentSyncConfig.ConfigInstance.HostingServerSettings.EnforceServerPacks);
 
         //Send Packet
-        PacketHandler.sendToPlayer(packet, (ServerPlayer) loggedInEvent.getEntity()); //YEET
+        PacketDistributor.sendToPlayer((ServerPlayer) loggedInEvent.getEntity(), packet);
+
 
     }
 }

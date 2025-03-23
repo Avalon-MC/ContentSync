@@ -1,8 +1,14 @@
 package net.petercashel.contentsync.network;
 
+import io.netty.buffer.ByteBuf;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraftforge.network.NetworkEvent;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 import net.petercashel.contentsync.configuration.ContentSyncConfig;
 import net.petercashel.contentsync.configuration.server.ServerContentEntry;
 
@@ -10,66 +16,63 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
 
-public class ContentSyncServerPackPacket_SC {
+import static net.petercashel.contentsync.ContentSync.MODID;
 
-    private final CompoundTag rootTag;
+public record ContentSyncServerPackPacket_SC(
+        List<ServerContentEntry> serverContentEntriesList,
+        String serverName,
+        boolean enforceServerPacks
+        ) implements CustomPacketPayload {
 
-    //Serialisation
-    public ContentSyncServerPackPacket_SC(List<ServerContentEntry> serverContentEntriesList) {
-        rootTag = new CompoundTag();
-        rootTag.putInt("count", serverContentEntriesList.size());
-        rootTag.putString("servername", ContentSyncConfig.ConfigInstance.HostingServerSettings.ThisServerAddress);
-        rootTag.putBoolean("enforceserverpacks", ContentSyncConfig.ConfigInstance.HostingServerSettings.EnforceServerPacks);
+    public static final CustomPacketPayload.Type<ContentSyncServerPackPacket_SC> TYPE = new CustomPacketPayload.Type<>(ResourceLocation.fromNamespaceAndPath(MODID, "ContentSyncServerPackPacket_SC"));
 
-        for (int i = 0; i < serverContentEntriesList.size(); i++) {
-            CompoundTag itemTag = serverContentEntriesList.get(i).serialise(new CompoundTag());
-            rootTag.put(Integer.toString(i), itemTag);
-        }
-    }
+    // Each pair of elements defines the stream codec of the element to encode/decode and the getter for the element to encode
+    // 'name' will be encoded and decoded as a string
+    // 'age' will be encoded and decoded as an integer
+    // The final parameter takes in the previous parameters in the order they are provided to construct the payload object
+    public static final StreamCodec<ByteBuf, ContentSyncServerPackPacket_SC> STREAM_CODEC = StreamCodec.composite(
+            ContentSyncServerPackPacket_SC.STREAM_CODEC_LIST_SERVERCONTENTENTRY,
+            ContentSyncServerPackPacket_SC::serverContentEntriesList,
+            ByteBufCodecs.STRING_UTF8,
+            ContentSyncServerPackPacket_SC::serverName,
+            ByteBufCodecs.BOOL,
+            ContentSyncServerPackPacket_SC::enforceServerPacks,
+            ContentSyncServerPackPacket_SC::new
+    );
 
-    public void encoder(FriendlyByteBuf pBuffer) {
-        pBuffer.writeNbt(rootTag);
-    }
+    public static final StreamCodec<ByteBuf, ServerContentEntry> STREAM_CODEC_SERVERCONTENTENTRY =
+            ByteBufCodecs.COMPOUND_TAG.map(
+                    // String -> ResourceLocation
+                    ServerContentEntry::deserialise_new,
+                    // ResourceLocation -> String
+                    ServerContentEntry::serialise_new
+            );
 
-
-
-    //Deserialisation
-    public ContentSyncServerPackPacket_SC(FriendlyByteBuf pBuffer) {
-        rootTag = pBuffer.readNbt();
-    }
-
-
-    public static ContentSyncServerPackPacket_SC decoder(FriendlyByteBuf friendlyByteBuf) {
-        return new ContentSyncServerPackPacket_SC(friendlyByteBuf);
-    }
+    public static final StreamCodec<ByteBuf, List<ServerContentEntry>> STREAM_CODEC_LIST_SERVERCONTENTENTRY =
+            ContentSyncServerPackPacket_SC.STREAM_CODEC_SERVERCONTENTENTRY.apply(ByteBufCodecs.list());
 
 
 
-    //Run it client side
-    public boolean messageConsumer(Supplier< NetworkEvent.Context> contextSupplier) {
-        NetworkEvent.Context ctx = contextSupplier.get();
-        ctx.enqueueWork(() -> {
-            //Client Side
-            try {
-                List<ServerContentEntry> serverContentEntriesList = new ArrayList<>();
-                int count = rootTag.getInt("count");
-                String ServerName = rootTag.getString("servername");
-                Boolean EnforceServerPacks = rootTag.getBoolean("enforceserverpacks");
-
-                for (int i = 0; i < count; i++) {
-                    CompoundTag itemTag = rootTag.getCompound(Integer.toString(i));
-                    serverContentEntriesList.add(ServerContentEntry.deserialise(itemTag));
-                }
-
-                ContentSyncClient.Process(serverContentEntriesList, ServerName, EnforceServerPacks, false);
-
-            } catch (Exception ex) {
-                //Fail
-            }
-
-        });
-        return true;
+    @Override
+    public CustomPacketPayload.Type<? extends CustomPacketPayload> type() {
+        return TYPE;
     }
 
 
+    public static void handleDataOnMain_client(ContentSyncServerPackPacket_SC data, IPayloadContext context) {
+
+        // Do something with the data, on the main thread
+        context.enqueueWork(() -> {
+                    ContentSyncClient.Process(data.serverContentEntriesList(), data.serverName(), data.enforceServerPacks(), false);
+                })
+                .exceptionally(e -> {
+                    // Handle exception
+                    context.disconnect(Component.translatable("my_mod.networking.failed", e.getMessage()));
+                    return null;
+                });
+    }
+
+    public static void handleDataOnMain_server(ContentSyncServerPackPacket_SC contentSyncServerPackPacketSc, IPayloadContext iPayloadContext) {
+        //NOP
+    }
 }

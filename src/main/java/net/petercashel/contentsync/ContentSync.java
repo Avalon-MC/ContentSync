@@ -15,6 +15,9 @@ import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.server.ServerStartedEvent;
 import net.neoforged.neoforge.event.server.ServerStartingEvent;
+import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
+import net.neoforged.neoforge.network.registration.HandlerThread;
+import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 import net.petercashel.contentsync.configuration.ContentSyncConfig;
 import net.petercashel.contentsync.gist.gistManager;
 import net.petercashel.contentsync.network.ContentSyncServer;
@@ -45,18 +48,23 @@ public class ContentSync
         NeoForge.EVENT_BUS.register(this);
         NeoForge.EVENT_BUS.register(ForgeRegistryEvents.class);
 
-        if (dist.isClient()) {
-            NeoForge.EVENT_BUS.register(ContentSyncClientEvents.class);
-        }
+
         NeoForge.EVENT_BUS.register(ContentSyncEvents.class);
 
 
         bus.register(RegistryEvents.class);
     }
 
+    @SubscribeEvent
+    public static void register(final RegisterPayloadHandlersEvent event) {
+        // Sets the current network version
+        final PayloadRegistrar registrar = event.registrar("1")
+                .executesOn(HandlerThread.NETWORK);
+        PacketHandler.RegisterNetwork(registrar);
+    }
+
     private void setup(final FMLCommonSetupEvent event)
     {
-        PacketHandler.RegisterNetwork(event);
     }
 
     private void enqueueIMC(final InterModEnqueueEvent event)

@@ -259,4 +259,23 @@ public class ServerContentEntry extends ContentEntry {
     public boolean IsEnabled() {
         return Enabled;
     }
+
+    public static ServerContentEntry deserialise_new(CompoundTag compoundTag) {
+        ServerContentEntry entry = new ServerContentEntry();
+
+        entry.type = PackTypeEnum.values()[compoundTag.getInt("packtype")];
+        entry.Name = compoundTag.getString("name");
+        entry.URL = compoundTag.getString("url");
+
+        return entry;
+    }
+
+    public CompoundTag serialise_new() {
+        CompoundTag compoundTag = new CompoundTag();
+        compoundTag.putInt("packtype", this.type.ordinal());
+        compoundTag.putString("name", this.Name);
+        compoundTag.putString("url", this.URL);
+
+        return compoundTag;
+    }
 }
