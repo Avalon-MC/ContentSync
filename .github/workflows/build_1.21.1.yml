@@ -53,7 +53,9 @@ jobs:
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: build/libs/${{ env.MCMOD_ID }}-${{ env.MCMOD_VERSION }}.jar
-          tag: ${{ github.ref }}
+          tag: ${{ env.MCMOD_VERSION }}
           overwrite: true
           file_glob: true
+          target_commit: ${{ github.ref }}
           body: "Automated Build for ${{ env.MCMOD_NAME }} ${{ env.MCMOD_VERSION }}"
+          release_name: "${{ env.MCMOD_NAME }} ${{ env.MCMOD_VERSION }}"
