@@ -9,13 +9,6 @@ jobs:
   build:
     runs-on: self-hosted
     steps:
-    
-      - name: 'Cleanup build folder'
-        run: |
-          ls -la ./
-          rm -rf ./* || true
-          rm -rf ./.??* || true
-          ls -la ./
         
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -31,12 +24,18 @@ jobs:
 
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
+        
+      - name: Load Env Variables from gradle.properties
+        run: ./updateenv.sh
+        
+      - name: Dump Env for futher work
+        run: printenv
 
       - name: chmod +x ./gradlew
         run: chmod +x ./gradlew
         
       - name: Build with Gradle
         run: ./gradlew build
-        
-      - name: Dump Env for futher work
-        run: printenv
+
+      - name: chmod +x ./updateenv.sh
+        run: chmod +x ./updateenv.sh
